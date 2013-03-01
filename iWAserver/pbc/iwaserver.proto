@@ -1,0 +1,84 @@
+package iWAserverAuth;
+
+
+message LogRegClient
+{
+    required string gamename = 1;
+    required uint32 version1 = 2;
+    required uint32 version2 = 3;
+    required uint32 version3 = 4;
+    required uint32 build = 5;
+    required string platform = 6;
+    required string os = 7;
+    required string country = 8;
+    required sint32 timezone_bias = 9;
+    required string username = 10;
+    optional string password = 11;
+}
+
+message LogRegServer
+{
+    enum resultCode
+    {
+        OK = 0;
+    }
+    
+    required resultCode result = 1;
+    optional bytes B = 2;
+    optional bytes g =3;
+    optional bytes N = 4;
+    optional bytes s = 5;
+}
+
+message ProofClient
+{
+    required bytes A = 1;
+    required bytes M1 = 2;
+}
+
+message ProofServer
+{
+    enum resultCode
+    {
+        OK = 0;
+    }
+    
+    required resultCode result = 1;
+    optional bytes M2 = 2;
+}
+
+
+
+message ServerListClient
+{
+    required uint32 reserved = 1;
+}
+
+message ServerListServer
+{
+    message Server
+    {
+        message Character
+        {
+            required uint64 guid = 1;
+            required string name = 2;
+            required uint32 grade = 3;
+            required uint32 race = 4;
+            required uint32 nation = 5;
+        }
+
+        required uint32 region = 1;
+        required uint32 status = 2;
+        required string name = 3;
+        optional string hit = 4;
+        required string address = 5;
+        required uint32 port = 6;
+        repeated Character characters = 7;
+    }
+
+    required uint32 num = 1;
+    repeated Server servers = 2;
+}
+
+
+

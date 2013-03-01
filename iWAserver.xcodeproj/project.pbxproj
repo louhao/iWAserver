@@ -7,8 +7,38 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0541909A16DE3189006420C9 /* iWA_Global.c in Sources */ = {isa = PBXBuildFile; fileRef = 0541909816DE3189006420C9 /* iWA_Global.c */; };
+		0541909B16DE3189006420C9 /* iWA_Mysql.c in Sources */ = {isa = PBXBuildFile; fileRef = 0541909916DE3189006420C9 /* iWA_Mysql.c */; };
+		054190A716DF44BE006420C9 /* iWA_AuthSession.c in Sources */ = {isa = PBXBuildFile; fileRef = 054190A616DF44BE006420C9 /* iWA_AuthSession.c */; };
 		0586AA2B16B2BD370051A969 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 0586AA2A16B2BD370051A969 /* main.c */; };
 		0586AA2D16B2BD370051A969 /* iWAserver.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0586AA2C16B2BD370051A969 /* iWAserver.1 */; };
+		0586AA3816B38C5E0051A969 /* libevent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0586AA3716B38C5E0051A969 /* libevent.a */; };
+		0586AA3E16B3CABD0051A969 /* libmysqlclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0586AA3916B3B8E90051A969 /* libmysqlclient.a */; };
+		058797A416B686F6002B5E46 /* iwaserver.pb-c.c in Sources */ = {isa = PBXBuildFile; fileRef = 058797A316B686F6002B5E46 /* iwaserver.pb-c.c */; };
+		058797A816B6A355002B5E46 /* protobuf-c.c in Sources */ = {isa = PBXBuildFile; fileRef = 058797A716B6A355002B5E46 /* protobuf-c.c */; };
+		05B49DA416C3A2BE0002385B /* bn_add.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D8B16C3A2BE0002385B /* bn_add.c */; };
+		05B49DA516C3A2BE0002385B /* bn_asm.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D8C16C3A2BE0002385B /* bn_asm.c */; };
+		05B49DA616C3A2BE0002385B /* bn_ctx.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D8D16C3A2BE0002385B /* bn_ctx.c */; };
+		05B49DA716C3A2BE0002385B /* bn_div.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D8E16C3A2BE0002385B /* bn_div.c */; };
+		05B49DA816C3A2BE0002385B /* bn_exp.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D8F16C3A2BE0002385B /* bn_exp.c */; };
+		05B49DA916C3A2BE0002385B /* bn_gcd.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D9016C3A2BE0002385B /* bn_gcd.c */; };
+		05B49DAA16C3A2BE0002385B /* bn_lib.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D9216C3A2BE0002385B /* bn_lib.c */; };
+		05B49DAB16C3A2BE0002385B /* bn_mod.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D9316C3A2BE0002385B /* bn_mod.c */; };
+		05B49DAC16C3A2BE0002385B /* bn_mont.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D9416C3A2BE0002385B /* bn_mont.c */; };
+		05B49DAD16C3A2BE0002385B /* bn_mul.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D9516C3A2BE0002385B /* bn_mul.c */; };
+		05B49DAE16C3A2BE0002385B /* bn_print.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D9716C3A2BE0002385B /* bn_print.c */; };
+		05B49DAF16C3A2BE0002385B /* bn_rand.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D9816C3A2BE0002385B /* bn_rand.c */; };
+		05B49DB016C3A2BE0002385B /* bn_recp.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D9916C3A2BE0002385B /* bn_recp.c */; };
+		05B49DB116C3A2BE0002385B /* bn_shift.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D9A16C3A2BE0002385B /* bn_shift.c */; };
+		05B49DB216C3A2BE0002385B /* bn_sqr.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D9B16C3A2BE0002385B /* bn_sqr.c */; };
+		05B49DB316C3A2BE0002385B /* bn_word.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D9C16C3A2BE0002385B /* bn_word.c */; };
+		05B49DB416C3A2BE0002385B /* mem_clr.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49DA016C3A2BE0002385B /* mem_clr.c */; };
+		05B49DB516C3A2BE0002385B /* mem.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49DA116C3A2BE0002385B /* mem.c */; };
+		05B49DB616C3A2BE0002385B /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49DA216C3A2BE0002385B /* sha1.c */; };
+		05B49DBB16C3A2D40002385B /* iWA_Basic.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49DB716C3A2D40002385B /* iWA_Basic.c */; };
+		05B49DBC16C3A2D40002385B /* iWA_Crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49DB816C3A2D40002385B /* iWA_Crypto.c */; };
+		05B49DBD16C3A2D40002385B /* iWA_Net.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49DB916C3A2D40002385B /* iWA_Net.c */; };
+		05B49DBF16C3A3C10002385B /* iWA_AuthServer.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49DBE16C3A3C10002385B /* iWA_AuthServer.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,9 +55,49 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0541909816DE3189006420C9 /* iWA_Global.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_Global.c; sourceTree = "<group>"; };
+		0541909916DE3189006420C9 /* iWA_Mysql.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_Mysql.c; sourceTree = "<group>"; };
+		054190A616DF44BE006420C9 /* iWA_AuthSession.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_AuthSession.c; sourceTree = "<group>"; };
 		0586AA2616B2BD370051A969 /* iWAserver */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = iWAserver; sourceTree = BUILT_PRODUCTS_DIR; };
 		0586AA2A16B2BD370051A969 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		0586AA2C16B2BD370051A969 /* iWAserver.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = iWAserver.1; sourceTree = "<group>"; };
+		0586AA3716B38C5E0051A969 /* libevent.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libevent.a; path = iWAserver/lib/libevent.a; sourceTree = "<group>"; };
+		0586AA3916B3B8E90051A969 /* libmysqlclient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmysqlclient.a; path = iWAserver/lib/libmysqlclient.a; sourceTree = "<group>"; };
+		0586AA3B16B3B9050051A969 /* libmysqld.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmysqld.a; path = iWAserver/lib/libmysqld.a; sourceTree = "<group>"; };
+		058797A316B686F6002B5E46 /* iwaserver.pb-c.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "iwaserver.pb-c.c"; path = "pbc/iwaserver.pb-c.c"; sourceTree = "<group>"; };
+		058797A616B68718002B5E46 /* iwaserver.pb-c.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "iwaserver.pb-c.h"; path = "pbc/iwaserver.pb-c.h"; sourceTree = "<group>"; };
+		058797A716B6A355002B5E46 /* protobuf-c.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "protobuf-c.c"; path = "include/google/protobuf-c/protobuf-c.c"; sourceTree = "<group>"; };
+		058797A916B6AD60002B5E46 /* iwaserver.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = iwaserver.proto; path = iWAserver/pbc/iwaserver.proto; sourceTree = "<group>"; };
+		05B49D8B16C3A2BE0002385B /* bn_add.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_add.c; path = bn/bn_add.c; sourceTree = "<group>"; };
+		05B49D8C16C3A2BE0002385B /* bn_asm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_asm.c; path = bn/bn_asm.c; sourceTree = "<group>"; };
+		05B49D8D16C3A2BE0002385B /* bn_ctx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_ctx.c; path = bn/bn_ctx.c; sourceTree = "<group>"; };
+		05B49D8E16C3A2BE0002385B /* bn_div.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_div.c; path = bn/bn_div.c; sourceTree = "<group>"; };
+		05B49D8F16C3A2BE0002385B /* bn_exp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_exp.c; path = bn/bn_exp.c; sourceTree = "<group>"; };
+		05B49D9016C3A2BE0002385B /* bn_gcd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_gcd.c; path = bn/bn_gcd.c; sourceTree = "<group>"; };
+		05B49D9116C3A2BE0002385B /* bn_lcl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bn_lcl.h; path = bn/bn_lcl.h; sourceTree = "<group>"; };
+		05B49D9216C3A2BE0002385B /* bn_lib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_lib.c; path = bn/bn_lib.c; sourceTree = "<group>"; };
+		05B49D9316C3A2BE0002385B /* bn_mod.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_mod.c; path = bn/bn_mod.c; sourceTree = "<group>"; };
+		05B49D9416C3A2BE0002385B /* bn_mont.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_mont.c; path = bn/bn_mont.c; sourceTree = "<group>"; };
+		05B49D9516C3A2BE0002385B /* bn_mul.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_mul.c; path = bn/bn_mul.c; sourceTree = "<group>"; };
+		05B49D9616C3A2BE0002385B /* bn_prime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bn_prime.h; path = bn/bn_prime.h; sourceTree = "<group>"; };
+		05B49D9716C3A2BE0002385B /* bn_print.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_print.c; path = bn/bn_print.c; sourceTree = "<group>"; };
+		05B49D9816C3A2BE0002385B /* bn_rand.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_rand.c; path = bn/bn_rand.c; sourceTree = "<group>"; };
+		05B49D9916C3A2BE0002385B /* bn_recp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_recp.c; path = bn/bn_recp.c; sourceTree = "<group>"; };
+		05B49D9A16C3A2BE0002385B /* bn_shift.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_shift.c; path = bn/bn_shift.c; sourceTree = "<group>"; };
+		05B49D9B16C3A2BE0002385B /* bn_sqr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_sqr.c; path = bn/bn_sqr.c; sourceTree = "<group>"; };
+		05B49D9C16C3A2BE0002385B /* bn_word.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_word.c; path = bn/bn_word.c; sourceTree = "<group>"; };
+		05B49D9D16C3A2BE0002385B /* bn.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = bn.h; path = bn/bn.h; sourceTree = "<group>"; };
+		05B49D9E16C3A2BE0002385B /* cryptlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cryptlib.h; path = bn/cryptlib.h; sourceTree = "<group>"; };
+		05B49D9F16C3A2BE0002385B /* e_os.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = e_os.h; path = bn/e_os.h; sourceTree = "<group>"; };
+		05B49DA016C3A2BE0002385B /* mem_clr.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mem_clr.c; path = bn/mem_clr.c; sourceTree = "<group>"; };
+		05B49DA116C3A2BE0002385B /* mem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mem.c; path = bn/mem.c; sourceTree = "<group>"; };
+		05B49DA216C3A2BE0002385B /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha1.c; path = bn/sha1.c; sourceTree = "<group>"; };
+		05B49DA316C3A2BE0002385B /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha1.h; path = bn/sha1.h; sourceTree = "<group>"; };
+		05B49DB716C3A2D40002385B /* iWA_Basic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_Basic.c; sourceTree = "<group>"; };
+		05B49DB816C3A2D40002385B /* iWA_Crypto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_Crypto.c; sourceTree = "<group>"; };
+		05B49DB916C3A2D40002385B /* iWA_Net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_Net.c; sourceTree = "<group>"; };
+		05B49DBA16C3A2D40002385B /* iWA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iWA.h; sourceTree = "<group>"; };
+		05B49DBE16C3A3C10002385B /* iWA_AuthServer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_AuthServer.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +105,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0586AA3E16B3CABD0051A969 /* libmysqlclient.a in Frameworks */,
+				0586AA3816B38C5E0051A969 /* libevent.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -44,6 +116,10 @@
 		0586AA1B16B2BD370051A969 = {
 			isa = PBXGroup;
 			children = (
+				058797A916B6AD60002B5E46 /* iwaserver.proto */,
+				0586AA3B16B3B9050051A969 /* libmysqld.a */,
+				0586AA3916B3B8E90051A969 /* libmysqlclient.a */,
+				0586AA3716B38C5E0051A969 /* libevent.a */,
 				0586AA2916B2BD370051A969 /* iWAserver */,
 				0586AA2716B2BD370051A969 /* Products */,
 			);
@@ -60,10 +136,62 @@
 		0586AA2916B2BD370051A969 /* iWAserver */ = {
 			isa = PBXGroup;
 			children = (
+				054190A616DF44BE006420C9 /* iWA_AuthSession.c */,
+				0541909816DE3189006420C9 /* iWA_Global.c */,
+				0541909916DE3189006420C9 /* iWA_Mysql.c */,
+				05B49DBE16C3A3C10002385B /* iWA_AuthServer.c */,
+				05B49DB716C3A2D40002385B /* iWA_Basic.c */,
+				05B49DB816C3A2D40002385B /* iWA_Crypto.c */,
+				05B49DB916C3A2D40002385B /* iWA_Net.c */,
+				05B49DBA16C3A2D40002385B /* iWA.h */,
+				05B49D8A16C3A26E0002385B /* bignumber */,
+				05B49D8816C3A25F0002385B /* pb */,
 				0586AA2A16B2BD370051A969 /* main.c */,
 				0586AA2C16B2BD370051A969 /* iWAserver.1 */,
 			);
 			path = iWAserver;
+			sourceTree = "<group>";
+		};
+		05B49D8816C3A25F0002385B /* pb */ = {
+			isa = PBXGroup;
+			children = (
+				058797A716B6A355002B5E46 /* protobuf-c.c */,
+				058797A616B68718002B5E46 /* iwaserver.pb-c.h */,
+				058797A316B686F6002B5E46 /* iwaserver.pb-c.c */,
+			);
+			name = pb;
+			sourceTree = "<group>";
+		};
+		05B49D8A16C3A26E0002385B /* bignumber */ = {
+			isa = PBXGroup;
+			children = (
+				05B49D8B16C3A2BE0002385B /* bn_add.c */,
+				05B49D8C16C3A2BE0002385B /* bn_asm.c */,
+				05B49D8D16C3A2BE0002385B /* bn_ctx.c */,
+				05B49D8E16C3A2BE0002385B /* bn_div.c */,
+				05B49D8F16C3A2BE0002385B /* bn_exp.c */,
+				05B49D9016C3A2BE0002385B /* bn_gcd.c */,
+				05B49D9116C3A2BE0002385B /* bn_lcl.h */,
+				05B49D9216C3A2BE0002385B /* bn_lib.c */,
+				05B49D9316C3A2BE0002385B /* bn_mod.c */,
+				05B49D9416C3A2BE0002385B /* bn_mont.c */,
+				05B49D9516C3A2BE0002385B /* bn_mul.c */,
+				05B49D9616C3A2BE0002385B /* bn_prime.h */,
+				05B49D9716C3A2BE0002385B /* bn_print.c */,
+				05B49D9816C3A2BE0002385B /* bn_rand.c */,
+				05B49D9916C3A2BE0002385B /* bn_recp.c */,
+				05B49D9A16C3A2BE0002385B /* bn_shift.c */,
+				05B49D9B16C3A2BE0002385B /* bn_sqr.c */,
+				05B49D9C16C3A2BE0002385B /* bn_word.c */,
+				05B49D9D16C3A2BE0002385B /* bn.h */,
+				05B49D9E16C3A2BE0002385B /* cryptlib.h */,
+				05B49D9F16C3A2BE0002385B /* e_os.h */,
+				05B49DA016C3A2BE0002385B /* mem_clr.c */,
+				05B49DA116C3A2BE0002385B /* mem.c */,
+				05B49DA216C3A2BE0002385B /* sha1.c */,
+				05B49DA316C3A2BE0002385B /* sha1.h */,
+			);
+			name = bignumber;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -118,6 +246,34 @@
 			buildActionMask = 2147483647;
 			files = (
 				0586AA2B16B2BD370051A969 /* main.c in Sources */,
+				058797A416B686F6002B5E46 /* iwaserver.pb-c.c in Sources */,
+				058797A816B6A355002B5E46 /* protobuf-c.c in Sources */,
+				05B49DA416C3A2BE0002385B /* bn_add.c in Sources */,
+				05B49DA516C3A2BE0002385B /* bn_asm.c in Sources */,
+				05B49DA616C3A2BE0002385B /* bn_ctx.c in Sources */,
+				05B49DA716C3A2BE0002385B /* bn_div.c in Sources */,
+				05B49DA816C3A2BE0002385B /* bn_exp.c in Sources */,
+				05B49DA916C3A2BE0002385B /* bn_gcd.c in Sources */,
+				05B49DAA16C3A2BE0002385B /* bn_lib.c in Sources */,
+				05B49DAB16C3A2BE0002385B /* bn_mod.c in Sources */,
+				05B49DAC16C3A2BE0002385B /* bn_mont.c in Sources */,
+				05B49DAD16C3A2BE0002385B /* bn_mul.c in Sources */,
+				05B49DAE16C3A2BE0002385B /* bn_print.c in Sources */,
+				05B49DAF16C3A2BE0002385B /* bn_rand.c in Sources */,
+				05B49DB016C3A2BE0002385B /* bn_recp.c in Sources */,
+				05B49DB116C3A2BE0002385B /* bn_shift.c in Sources */,
+				05B49DB216C3A2BE0002385B /* bn_sqr.c in Sources */,
+				05B49DB316C3A2BE0002385B /* bn_word.c in Sources */,
+				05B49DB416C3A2BE0002385B /* mem_clr.c in Sources */,
+				05B49DB516C3A2BE0002385B /* mem.c in Sources */,
+				05B49DB616C3A2BE0002385B /* sha1.c in Sources */,
+				05B49DBB16C3A2D40002385B /* iWA_Basic.c in Sources */,
+				05B49DBC16C3A2D40002385B /* iWA_Crypto.c in Sources */,
+				05B49DBD16C3A2D40002385B /* iWA_Net.c in Sources */,
+				05B49DBF16C3A3C10002385B /* iWA_AuthServer.c in Sources */,
+				0541909A16DE3189006420C9 /* iWA_Global.c in Sources */,
+				0541909B16DE3189006420C9 /* iWA_Mysql.c in Sources */,
+				054190A716DF44BE006420C9 /* iWA_AuthSession.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -147,6 +303,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/iWAserver/include";
+				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -170,6 +328,8 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/iWAserver/include";
+				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				SDKROOT = macosx;
 			};
@@ -178,6 +338,10 @@
 		0586AA3116B2BD370051A969 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/iWAserver/lib\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -185,6 +349,10 @@
 		0586AA3216B2BD370051A969 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/iWAserver/lib\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -208,6 +376,7 @@
 				0586AA3216B2BD370051A969 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
