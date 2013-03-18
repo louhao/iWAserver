@@ -1,80 +1,78 @@
 
 #include "iWA.h"
 
-typedef struct
-{
-    iWAbool f_used;
-    struct bufferevent *bev;
-}iWAstruct_AuthSession_Session;
+
 
 #define iWAmacro_AUTHSESSION_SESSION_NUM_MAX   (256)
 
 static iWAstruct_AuthSession_Session sessions[iWAmacro_AUTHSESSION_SESSION_NUM_MAX] = {0};
 
 
-
-
-
-iWAint16 iWA_AuthSession_SessionNew(struct bufferevent *bev)
+iWAstruct_AuthSession_Session* iWA_AuthSession_AllocSession(struct bufferevent *bev)
 {
     iWAint32 i;
 
-    iWA_Log("iWA_AuthSession_SessionNew()");
+    iWA_Info("iWA_AuthSession_AllocSession()");
 
-    if(bev == NULL)  return -1;
+    iWA_Assert(bev != NULL);
 
     for(i = 0; i < iWAmacro_AUTHSESSION_SESSION_NUM_MAX; i++)
     {
         if(sessions[i].f_used)    continue;
+
+        iWA_Std_memset(&sessions[i], 0, sizeof(iWAstruct_AuthSession_Session));
         
         sessions[i].f_used = 1;
         sessions[i].bev = bev;
 
-        return i;
+        return &sessions[i];
     }
 
-    return -1;
+    iWA_Error("Alloc Auth Session Error");
+
+    return NULL;
 }
 
-void iWA_AuthSession_SessionEnd(struct bufferevent *bev)
+
+void iWA_AuthSession_FreeSession(struct bufferevent *bev)
 {
     iWAint32 i;
 
-    iWA_Log("iWA_AuthSession_SessionEnd()");
+    iWA_Info("iWA_AuthSession_FreeSession()");
 
-    if(bev == NULL)  return;
+    iWA_Assert(bev != NULL);
 
     for(i = 0; i < iWAmacro_AUTHSESSION_SESSION_NUM_MAX; i++)
     {
         if(sessions[i].f_used && sessions[i].bev == bev)
         {
-            sessions[i].f_used = 0;
-            sessions[i].bev = NULL;     
+            sessions[i].f_used = 0;  
             
             return;
         }
     }
 }
 
-iWAint16 iWA_AuthSession_SessionId(struct bufferevent *bev)
+
+iWAstruct_AuthSession_Session* iWA_AuthSession_GetSession(struct bufferevent *bev)
 {
     iWAint32 i;
 
-    iWA_Log("iWA_AuthSession_SessionId()");
+    iWA_Info("iWA_AuthSession_GetSession()");
 
-    if(bev == NULL)  return -1;
+    iWA_Assert(bev != NULL);
 
     for(i = 0; i < iWAmacro_AUTHSESSION_SESSION_NUM_MAX; i++)
     {
-        if(sessions[i].f_used && sessions[i].bev == bev)  return i;
+        if(sessions[i].f_used && sessions[i].bev == bev)  return &sessions[i];
     }
 
-    return -1;
+    return NULL;
 }
 
 struct bufferevent* iWA_AuthSession_SessionBev(iWAint16 id)
 {
-    iWA_Log("iWA_AuthSession_SessionBev()");
+    iWA_Info("iWA_AuthSession_SessionBev()");
 
     if(id < 0 || id >= iWAmacro_AUTHSESSION_SESSION_NUM_MAX)  return NULL;
 
@@ -82,6 +80,13 @@ struct bufferevent* iWA_AuthSession_SessionBev(iWAint16 id)
 
     return sessions[id].bev;
 }
+
+
+
+
+
+
+
 
 
 

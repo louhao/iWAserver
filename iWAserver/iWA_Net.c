@@ -38,7 +38,7 @@ iWAuint32 iWA_Net_WritePacketBigNumber(iWAuint8 *packet, BIGNUM *bn)
 
     /* convert */
     len = BN_bn2bin(bn, packet);
-
+#if 0
     /* should do reverse */
     for(a = 0, b = len-1; a < len/2; a++, b--)
     {
@@ -46,12 +46,13 @@ iWAuint32 iWA_Net_WritePacketBigNumber(iWAuint8 *packet, BIGNUM *bn)
         packet[a] = packet[b];
         packet[b] = c;
     }  
-
+#endif
     return len;
 }
 
 void iWA_Net_ReadPacketBigNumber(iWAuint8 *packet, iWAuint32 len, BIGNUM *bn)
 {
+#if 0
 #define iWAmacro_AUTH_READ_PACKET_BIGNUMBER_SIZE        (128)
 
     iWAuint8 bn_bin[iWAmacro_AUTH_READ_PACKET_BIGNUMBER_SIZE];   /* support maxium 1024 bits BN */
@@ -61,6 +62,9 @@ void iWA_Net_ReadPacketBigNumber(iWAuint8 *packet, iWAuint32 len, BIGNUM *bn)
 
     for(i = 0, j = len-1; i < len; i++, j--)    bn_bin[i] = packet[j];    
     BN_bin2bn(bn_bin, len, bn);     
+#endif
+
+    BN_bin2bn(packet, len, bn); 
 }
 
 /* return packet read length, include tail '\0' */

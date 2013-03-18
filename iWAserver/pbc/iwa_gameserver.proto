@@ -1,0 +1,88 @@
+package iWAserverGame;
+
+enum resultCode
+{
+    SUCCESS = 0;
+
+    UNKNOWN_ERROR = 10;
+    UNPACK_MESSAGE_ERROR = 20;
+
+    AUTH_RESPONSE_DB_QUERY_ERROR = 100;
+    AUTH_RESPONSE_ACCOUNT_NOEXIST = 101;    
+    AUTH_RESPONSE_HASH_CHECK_ERROR = 102;
+
+    CHAR_CREATE_ILLEGAL_NAME = 200;
+    CHAR_CREATE_DB_INSERT_ERROR = 201;
+
+    CHAR_DELETE_DB_DELETE_ERROR = 210;
+    
+}
+
+message AuthChallengeServer
+{
+    required uint32 seed = 1;
+}
+
+message AuthSessionClient
+{
+    required uint32 build = 1;
+    required string username = 2;
+    required uint32 seed = 3;
+    required bytes D =4;
+}
+
+message AuthResponseServer
+{
+    required resultCode result = 1;
+}
+
+message Character
+{
+    required uint32 cid = 1;
+    required string name = 2;
+    required uint32 grade = 3;
+    required uint32 race = 4;
+    required uint32 nation = 5;
+}
+
+message CharEnumClient
+{
+    required uint32 reserved = 1;
+}
+
+message CharEnumServer
+{
+
+    required uint32 char_num = 1;
+    repeated Character characters = 2;
+}
+
+message CharCreateClient
+{
+    required string name = 1;
+    required uint32 race = 2;
+    required uint32 nation = 3;
+}
+
+message CharCreateServer
+{
+    required resultCode result = 1;
+    required uint32 cid = 2;
+}
+
+message CharDeleteClient
+{
+    required uint32 cid = 1;
+}
+
+message CharDeleteServer
+{
+    required resultCode result = 1;
+}
+
+message PlayerLoginClient
+{
+    required uint32 cid = 1;
+}
+
+

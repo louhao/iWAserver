@@ -1,5 +1,25 @@
 package iWAserverAuth;
 
+enum resultCode
+{
+    SUCCESS = 0;
+
+    UNKNOWN_ERROR = 10;
+    UNPACK_MESSAGE_ERROR = 20;
+
+    REG_USERNAME_EMPTY = 100;
+    REG_PASSWORD_EMPTY = 101;
+    REG_DB_INSERT_ERROR = 102;
+
+    LOGON_USERNAME_EMPTY = 200;
+    LOGON_DB_QUERY_ERROR = 201;
+    LOGON_ACCOUNT_NOEXIST = 202;    
+
+    PROOF_AVALUE_INCORRECT = 300;
+    PROOF_M1VALUE_INCORRECT = 301;
+    PROOF_MVALUE_UNMATCH = 302;
+    PROOF_DB_UPDATE_ERROR = 303;
+}
 
 message LogRegClient
 {
@@ -13,16 +33,11 @@ message LogRegClient
     required string country = 8;
     required sint32 timezone_bias = 9;
     required string username = 10;
-    optional string password = 11;
+    optional string password_hash = 11;
 }
 
 message LogRegServer
 {
-    enum resultCode
-    {
-        OK = 0;
-    }
-    
     required resultCode result = 1;
     optional bytes B = 2;
     optional bytes g =3;
@@ -38,16 +53,8 @@ message ProofClient
 
 message ProofServer
 {
-    enum resultCode
-    {
-        OK = 0;
-    }
-    
     required resultCode result = 1;
-    optional bytes M2 = 2;
 }
-
-
 
 message ServerListClient
 {
@@ -60,20 +67,22 @@ message ServerListServer
     {
         message Character
         {
-            required uint64 guid = 1;
+            required uint32 cid = 1;
             required string name = 2;
             required uint32 grade = 3;
             required uint32 race = 4;
             required uint32 nation = 5;
         }
 
-        required uint32 region = 1;
-        required uint32 status = 2;
-        required string name = 3;
-        optional string hit = 4;
-        required string address = 5;
-        required uint32 port = 6;
-        repeated Character characters = 7;
+        required uint32 sid = 1;
+        required uint32 region = 2;
+        required uint32 status = 3;
+        required string name = 4;
+        optional string hit = 5;
+        required string address = 6;
+        required uint32 port = 7;
+        required uint32 char_num = 8;
+        repeated Character characters = 9;
     }
 
     required uint32 num = 1;

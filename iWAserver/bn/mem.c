@@ -100,33 +100,33 @@ static void (*free_locked_func)(void *)     = free;
 
 #else
 
-extern void* iWA_Malloc(size_t);
-extern void iWA_Free(void*);
-extern void *iWA_Realloc(void*, size_t);
+extern void* iWA_Memory_Alloc(size_t);
+extern void iWA_Memory_Free(void*);
+extern void *iWA_Memory_Realloc(void*, size_t);
 
 
-static void *(*malloc_func)(size_t)         = iWA_Malloc;
+static void *(*malloc_func)(size_t)         = iWA_Memory_Alloc;
 static void *default_malloc_ex(size_t num, const char *file, int line)
 	{ return malloc_func(num); }
 static void *(*malloc_ex_func)(size_t, const char *file, int line)
         = default_malloc_ex;
 
-static void *(*realloc_func)(void *, size_t)= iWA_Realloc;
+static void *(*realloc_func)(void *, size_t)= iWA_Memory_Realloc;
 static void *default_realloc_ex(void *str, size_t num,
         const char *file, int line)
 	{ return realloc_func(str,num); }
 static void *(*realloc_ex_func)(void *, size_t, const char *file, int line)
         = default_realloc_ex;
 
-static void (*free_func)(void *)            = iWA_Free;
+static void (*free_func)(void *)            = iWA_Memory_Free;
 
-static void *(*malloc_locked_func)(size_t)  = iWA_Malloc;
+static void *(*malloc_locked_func)(size_t)  = iWA_Memory_Alloc;
 static void *default_malloc_locked_ex(size_t num, const char *file, int line)
 	{ return malloc_locked_func(num); }
 static void *(*malloc_locked_ex_func)(size_t, const char *file, int line)
         = default_malloc_locked_ex;
 
-static void (*free_locked_func)(void *)     = iWA_Free;
+static void (*free_locked_func)(void *)     = iWA_Memory_Free;
 
 
 

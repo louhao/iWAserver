@@ -10,12 +10,19 @@
 		0541909A16DE3189006420C9 /* iWA_Global.c in Sources */ = {isa = PBXBuildFile; fileRef = 0541909816DE3189006420C9 /* iWA_Global.c */; };
 		0541909B16DE3189006420C9 /* iWA_Mysql.c in Sources */ = {isa = PBXBuildFile; fileRef = 0541909916DE3189006420C9 /* iWA_Mysql.c */; };
 		054190A716DF44BE006420C9 /* iWA_AuthSession.c in Sources */ = {isa = PBXBuildFile; fileRef = 054190A616DF44BE006420C9 /* iWA_AuthSession.c */; };
+		054190B316E1ECC7006420C9 /* iwa_authserver.pb-c.c in Sources */ = {isa = PBXBuildFile; fileRef = 054190B116E1ECC7006420C9 /* iwa_authserver.pb-c.c */; };
+		054190B616E1ECE7006420C9 /* iwa_gameserver.pb-c.c in Sources */ = {isa = PBXBuildFile; fileRef = 054190B416E1ECE7006420C9 /* iwa_gameserver.pb-c.c */; };
+		054190C016E76FC7006420C9 /* iWA_GameServer.c in Sources */ = {isa = PBXBuildFile; fileRef = 054190BF16E76FC7006420C9 /* iWA_GameServer.c */; };
+		054190C316E89F49006420C9 /* minIni.c in Sources */ = {isa = PBXBuildFile; fileRef = 054190C216E89F49006420C9 /* minIni.c */; };
+		054190C516E9BBF8006420C9 /* iWA_Config.c in Sources */ = {isa = PBXBuildFile; fileRef = 054190C416E9BBF8006420C9 /* iWA_Config.c */; };
 		0586AA2B16B2BD370051A969 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 0586AA2A16B2BD370051A969 /* main.c */; };
 		0586AA2D16B2BD370051A969 /* iWAserver.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0586AA2C16B2BD370051A969 /* iWAserver.1 */; };
 		0586AA3816B38C5E0051A969 /* libevent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0586AA3716B38C5E0051A969 /* libevent.a */; };
 		0586AA3E16B3CABD0051A969 /* libmysqlclient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0586AA3916B3B8E90051A969 /* libmysqlclient.a */; };
-		058797A416B686F6002B5E46 /* iwaserver.pb-c.c in Sources */ = {isa = PBXBuildFile; fileRef = 058797A316B686F6002B5E46 /* iwaserver.pb-c.c */; };
 		058797A816B6A355002B5E46 /* protobuf-c.c in Sources */ = {isa = PBXBuildFile; fileRef = 058797A716B6A355002B5E46 /* protobuf-c.c */; };
+		05A9BF9B16EB2D06001E1F61 /* liblog4c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 05A9BF9A16EB2D06001E1F61 /* liblog4c.a */; };
+		05A9BF9E16EB2D4A001E1F61 /* iWA_GameSession.c in Sources */ = {isa = PBXBuildFile; fileRef = 05A9BF9D16EB2D4A001E1F61 /* iWA_GameSession.c */; };
+		05A9BFA016EB2EFA001E1F61 /* iWA_Log.c in Sources */ = {isa = PBXBuildFile; fileRef = 05A9BF9F16EB2EFA001E1F61 /* iWA_Log.c */; };
 		05B49DA416C3A2BE0002385B /* bn_add.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D8B16C3A2BE0002385B /* bn_add.c */; };
 		05B49DA516C3A2BE0002385B /* bn_asm.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D8C16C3A2BE0002385B /* bn_asm.c */; };
 		05B49DA616C3A2BE0002385B /* bn_ctx.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49D8D16C3A2BE0002385B /* bn_ctx.c */; };
@@ -35,10 +42,10 @@
 		05B49DB416C3A2BE0002385B /* mem_clr.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49DA016C3A2BE0002385B /* mem_clr.c */; };
 		05B49DB516C3A2BE0002385B /* mem.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49DA116C3A2BE0002385B /* mem.c */; };
 		05B49DB616C3A2BE0002385B /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49DA216C3A2BE0002385B /* sha1.c */; };
-		05B49DBB16C3A2D40002385B /* iWA_Basic.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49DB716C3A2D40002385B /* iWA_Basic.c */; };
 		05B49DBC16C3A2D40002385B /* iWA_Crypto.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49DB816C3A2D40002385B /* iWA_Crypto.c */; };
 		05B49DBD16C3A2D40002385B /* iWA_Net.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49DB916C3A2D40002385B /* iWA_Net.c */; };
 		05B49DBF16C3A3C10002385B /* iWA_AuthServer.c in Sources */ = {isa = PBXBuildFile; fileRef = 05B49DBE16C3A3C10002385B /* iWA_AuthServer.c */; };
+		05F9966116EF1F0A005651F1 /* iWA_Memory.c in Sources */ = {isa = PBXBuildFile; fileRef = 05F9966016EF1F0A005651F1 /* iWA_Memory.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -58,16 +65,23 @@
 		0541909816DE3189006420C9 /* iWA_Global.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_Global.c; sourceTree = "<group>"; };
 		0541909916DE3189006420C9 /* iWA_Mysql.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_Mysql.c; sourceTree = "<group>"; };
 		054190A616DF44BE006420C9 /* iWA_AuthSession.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_AuthSession.c; sourceTree = "<group>"; };
+		054190B116E1ECC7006420C9 /* iwa_authserver.pb-c.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "iwa_authserver.pb-c.c"; path = "pbc/iwa_authserver.pb-c.c"; sourceTree = "<group>"; };
+		054190B216E1ECC7006420C9 /* iwa_authserver.pb-c.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "iwa_authserver.pb-c.h"; path = "pbc/iwa_authserver.pb-c.h"; sourceTree = "<group>"; };
+		054190B416E1ECE7006420C9 /* iwa_gameserver.pb-c.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "iwa_gameserver.pb-c.c"; path = "pbc/iwa_gameserver.pb-c.c"; sourceTree = "<group>"; };
+		054190B516E1ECE7006420C9 /* iwa_gameserver.pb-c.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "iwa_gameserver.pb-c.h"; path = "pbc/iwa_gameserver.pb-c.h"; sourceTree = "<group>"; };
+		054190BF16E76FC7006420C9 /* iWA_GameServer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_GameServer.c; sourceTree = "<group>"; };
+		054190C216E89F49006420C9 /* minIni.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = minIni.c; path = minIni/minIni.c; sourceTree = "<group>"; };
+		054190C416E9BBF8006420C9 /* iWA_Config.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_Config.c; sourceTree = "<group>"; };
 		0586AA2616B2BD370051A969 /* iWAserver */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = iWAserver; sourceTree = BUILT_PRODUCTS_DIR; };
 		0586AA2A16B2BD370051A969 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		0586AA2C16B2BD370051A969 /* iWAserver.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = iWAserver.1; sourceTree = "<group>"; };
 		0586AA3716B38C5E0051A969 /* libevent.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libevent.a; path = iWAserver/lib/libevent.a; sourceTree = "<group>"; };
 		0586AA3916B3B8E90051A969 /* libmysqlclient.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmysqlclient.a; path = iWAserver/lib/libmysqlclient.a; sourceTree = "<group>"; };
 		0586AA3B16B3B9050051A969 /* libmysqld.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmysqld.a; path = iWAserver/lib/libmysqld.a; sourceTree = "<group>"; };
-		058797A316B686F6002B5E46 /* iwaserver.pb-c.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "iwaserver.pb-c.c"; path = "pbc/iwaserver.pb-c.c"; sourceTree = "<group>"; };
-		058797A616B68718002B5E46 /* iwaserver.pb-c.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "iwaserver.pb-c.h"; path = "pbc/iwaserver.pb-c.h"; sourceTree = "<group>"; };
 		058797A716B6A355002B5E46 /* protobuf-c.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "protobuf-c.c"; path = "include/google/protobuf-c/protobuf-c.c"; sourceTree = "<group>"; };
-		058797A916B6AD60002B5E46 /* iwaserver.proto */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = iwaserver.proto; path = iWAserver/pbc/iwaserver.proto; sourceTree = "<group>"; };
+		05A9BF9A16EB2D06001E1F61 /* liblog4c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblog4c.a; path = iWAserver/lib/liblog4c.a; sourceTree = "<group>"; };
+		05A9BF9D16EB2D4A001E1F61 /* iWA_GameSession.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_GameSession.c; sourceTree = "<group>"; };
+		05A9BF9F16EB2EFA001E1F61 /* iWA_Log.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_Log.c; sourceTree = "<group>"; };
 		05B49D8B16C3A2BE0002385B /* bn_add.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_add.c; path = bn/bn_add.c; sourceTree = "<group>"; };
 		05B49D8C16C3A2BE0002385B /* bn_asm.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_asm.c; path = bn/bn_asm.c; sourceTree = "<group>"; };
 		05B49D8D16C3A2BE0002385B /* bn_ctx.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = bn_ctx.c; path = bn/bn_ctx.c; sourceTree = "<group>"; };
@@ -93,11 +107,11 @@
 		05B49DA116C3A2BE0002385B /* mem.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mem.c; path = bn/mem.c; sourceTree = "<group>"; };
 		05B49DA216C3A2BE0002385B /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha1.c; path = bn/sha1.c; sourceTree = "<group>"; };
 		05B49DA316C3A2BE0002385B /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha1.h; path = bn/sha1.h; sourceTree = "<group>"; };
-		05B49DB716C3A2D40002385B /* iWA_Basic.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_Basic.c; sourceTree = "<group>"; };
 		05B49DB816C3A2D40002385B /* iWA_Crypto.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_Crypto.c; sourceTree = "<group>"; };
 		05B49DB916C3A2D40002385B /* iWA_Net.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_Net.c; sourceTree = "<group>"; };
 		05B49DBA16C3A2D40002385B /* iWA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iWA.h; sourceTree = "<group>"; };
 		05B49DBE16C3A3C10002385B /* iWA_AuthServer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_AuthServer.c; sourceTree = "<group>"; };
+		05F9966016EF1F0A005651F1 /* iWA_Memory.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = iWA_Memory.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +119,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				05A9BF9B16EB2D06001E1F61 /* liblog4c.a in Frameworks */,
 				0586AA3E16B3CABD0051A969 /* libmysqlclient.a in Frameworks */,
 				0586AA3816B38C5E0051A969 /* libevent.a in Frameworks */,
 			);
@@ -113,10 +128,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		054190C116E89F39006420C9 /* minIni */ = {
+			isa = PBXGroup;
+			children = (
+				054190C216E89F49006420C9 /* minIni.c */,
+			);
+			name = minIni;
+			sourceTree = "<group>";
+		};
 		0586AA1B16B2BD370051A969 = {
 			isa = PBXGroup;
 			children = (
-				058797A916B6AD60002B5E46 /* iwaserver.proto */,
+				05A9BF9A16EB2D06001E1F61 /* liblog4c.a */,
 				0586AA3B16B3B9050051A969 /* libmysqld.a */,
 				0586AA3916B3B8E90051A969 /* libmysqlclient.a */,
 				0586AA3716B38C5E0051A969 /* libevent.a */,
@@ -136,16 +159,21 @@
 		0586AA2916B2BD370051A969 /* iWAserver */ = {
 			isa = PBXGroup;
 			children = (
+				054190C116E89F39006420C9 /* minIni */,
+				05B49D8A16C3A26E0002385B /* bignumber */,
+				05B49D8816C3A25F0002385B /* pb */,
+				054190C416E9BBF8006420C9 /* iWA_Config.c */,
+				05A9BF9F16EB2EFA001E1F61 /* iWA_Log.c */,
+				05F9966016EF1F0A005651F1 /* iWA_Memory.c */,
+				05A9BF9D16EB2D4A001E1F61 /* iWA_GameSession.c */,
+				054190BF16E76FC7006420C9 /* iWA_GameServer.c */,
 				054190A616DF44BE006420C9 /* iWA_AuthSession.c */,
 				0541909816DE3189006420C9 /* iWA_Global.c */,
 				0541909916DE3189006420C9 /* iWA_Mysql.c */,
 				05B49DBE16C3A3C10002385B /* iWA_AuthServer.c */,
-				05B49DB716C3A2D40002385B /* iWA_Basic.c */,
 				05B49DB816C3A2D40002385B /* iWA_Crypto.c */,
 				05B49DB916C3A2D40002385B /* iWA_Net.c */,
 				05B49DBA16C3A2D40002385B /* iWA.h */,
-				05B49D8A16C3A26E0002385B /* bignumber */,
-				05B49D8816C3A25F0002385B /* pb */,
 				0586AA2A16B2BD370051A969 /* main.c */,
 				0586AA2C16B2BD370051A969 /* iWAserver.1 */,
 			);
@@ -155,9 +183,11 @@
 		05B49D8816C3A25F0002385B /* pb */ = {
 			isa = PBXGroup;
 			children = (
+				054190B416E1ECE7006420C9 /* iwa_gameserver.pb-c.c */,
+				054190B516E1ECE7006420C9 /* iwa_gameserver.pb-c.h */,
+				054190B116E1ECC7006420C9 /* iwa_authserver.pb-c.c */,
+				054190B216E1ECC7006420C9 /* iwa_authserver.pb-c.h */,
 				058797A716B6A355002B5E46 /* protobuf-c.c */,
-				058797A616B68718002B5E46 /* iwaserver.pb-c.h */,
-				058797A316B686F6002B5E46 /* iwaserver.pb-c.c */,
 			);
 			name = pb;
 			sourceTree = "<group>";
@@ -246,7 +276,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				0586AA2B16B2BD370051A969 /* main.c in Sources */,
-				058797A416B686F6002B5E46 /* iwaserver.pb-c.c in Sources */,
 				058797A816B6A355002B5E46 /* protobuf-c.c in Sources */,
 				05B49DA416C3A2BE0002385B /* bn_add.c in Sources */,
 				05B49DA516C3A2BE0002385B /* bn_asm.c in Sources */,
@@ -267,13 +296,20 @@
 				05B49DB416C3A2BE0002385B /* mem_clr.c in Sources */,
 				05B49DB516C3A2BE0002385B /* mem.c in Sources */,
 				05B49DB616C3A2BE0002385B /* sha1.c in Sources */,
-				05B49DBB16C3A2D40002385B /* iWA_Basic.c in Sources */,
 				05B49DBC16C3A2D40002385B /* iWA_Crypto.c in Sources */,
 				05B49DBD16C3A2D40002385B /* iWA_Net.c in Sources */,
 				05B49DBF16C3A3C10002385B /* iWA_AuthServer.c in Sources */,
 				0541909A16DE3189006420C9 /* iWA_Global.c in Sources */,
 				0541909B16DE3189006420C9 /* iWA_Mysql.c in Sources */,
 				054190A716DF44BE006420C9 /* iWA_AuthSession.c in Sources */,
+				054190B316E1ECC7006420C9 /* iwa_authserver.pb-c.c in Sources */,
+				054190B616E1ECE7006420C9 /* iwa_gameserver.pb-c.c in Sources */,
+				054190C016E76FC7006420C9 /* iWA_GameServer.c in Sources */,
+				054190C316E89F49006420C9 /* minIni.c in Sources */,
+				054190C516E9BBF8006420C9 /* iWA_Config.c in Sources */,
+				05A9BF9E16EB2D4A001E1F61 /* iWA_GameSession.c in Sources */,
+				05A9BFA016EB2EFA001E1F61 /* iWA_Log.c in Sources */,
+				05F9966116EF1F0A005651F1 /* iWA_Memory.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -338,6 +374,10 @@
 		0586AA3116B2BD370051A969 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/iWAserver/include",
+					"$(SRCROOT)/iWAserver/minIni",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/iWAserver/lib\"",
@@ -349,6 +389,10 @@
 		0586AA3216B2BD370051A969 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/iWAserver/include",
+					"$(SRCROOT)/iWAserver/minIni",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/iWAserver/lib\"",
