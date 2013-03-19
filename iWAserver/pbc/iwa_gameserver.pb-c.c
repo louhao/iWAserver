@@ -763,13 +763,13 @@ const ProtobufCMessageDescriptor i_waserver_game__char_enum_client__descriptor =
 static const ProtobufCFieldDescriptor i_waserver_game__char_enum_server__field_descriptors[2] =
 {
   {
-    "char_num",
+    "result",
     1,
     PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_TYPE_ENUM,
     0,   /* quantifier_offset */
-    PROTOBUF_C_OFFSETOF(IWAserverGame__CharEnumServer, char_num),
-    NULL,
+    PROTOBUF_C_OFFSETOF(IWAserverGame__CharEnumServer, result),
+    &i_waserver_game__result_code__descriptor,
     NULL,
     0,            /* packed */
     0,NULL,NULL    /* reserved1,reserved2, etc */
@@ -788,8 +788,8 @@ static const ProtobufCFieldDescriptor i_waserver_game__char_enum_server__field_d
   },
 };
 static const unsigned i_waserver_game__char_enum_server__field_indices_by_name[] = {
-  0,   /* field[0] = char_num */
   1,   /* field[1] = characters */
+  0,   /* field[0] = result */
 };
 static const ProtobufCIntRange i_waserver_game__char_enum_server__number_ranges[1 + 1] =
 {
@@ -1040,7 +1040,7 @@ const ProtobufCMessageDescriptor i_waserver_game__player_login_client__descripto
   (ProtobufCMessageInit) i_waserver_game__player_login_client__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-const ProtobufCEnumValue i_waserver_game__result_code__enum_values_by_number[9] =
+const ProtobufCEnumValue i_waserver_game__result_code__enum_values_by_number[12] =
 {
   { "SUCCESS", "I_WASERVER_GAME__RESULT_CODE__SUCCESS", 0 },
   { "UNKNOWN_ERROR", "I_WASERVER_GAME__RESULT_CODE__UNKNOWN_ERROR", 10 },
@@ -1048,21 +1048,27 @@ const ProtobufCEnumValue i_waserver_game__result_code__enum_values_by_number[9] 
   { "AUTH_RESPONSE_DB_QUERY_ERROR", "I_WASERVER_GAME__RESULT_CODE__AUTH_RESPONSE_DB_QUERY_ERROR", 100 },
   { "AUTH_RESPONSE_ACCOUNT_NOEXIST", "I_WASERVER_GAME__RESULT_CODE__AUTH_RESPONSE_ACCOUNT_NOEXIST", 101 },
   { "AUTH_RESPONSE_HASH_CHECK_ERROR", "I_WASERVER_GAME__RESULT_CODE__AUTH_RESPONSE_HASH_CHECK_ERROR", 102 },
-  { "CHAR_CREATE_ILLEGAL_NAME", "I_WASERVER_GAME__RESULT_CODE__CHAR_CREATE_ILLEGAL_NAME", 200 },
-  { "CHAR_CREATE_DB_INSERT_ERROR", "I_WASERVER_GAME__RESULT_CODE__CHAR_CREATE_DB_INSERT_ERROR", 201 },
-  { "CHAR_DELETE_DB_DELETE_ERROR", "I_WASERVER_GAME__RESULT_CODE__CHAR_DELETE_DB_DELETE_ERROR", 210 },
+  { "CHAR_ENUM_DB_QUERY_ERROR", "I_WASERVER_GAME__RESULT_CODE__CHAR_ENUM_DB_QUERY_ERROR", 200 },
+  { "CHAR_CREATE_NAME_EMPTY", "I_WASERVER_GAME__RESULT_CODE__CHAR_CREATE_NAME_EMPTY", 210 },
+  { "CHAR_CREATE_DB_QUERY_ERROR", "I_WASERVER_GAME__RESULT_CODE__CHAR_CREATE_DB_QUERY_ERROR", 211 },
+  { "CHAR_CREATE_NAME_ALREADY_EXISTS", "I_WASERVER_GAME__RESULT_CODE__CHAR_CREATE_NAME_ALREADY_EXISTS", 212 },
+  { "CHAR_CREATE_DB_INSERT_ERROR", "I_WASERVER_GAME__RESULT_CODE__CHAR_CREATE_DB_INSERT_ERROR", 213 },
+  { "CHAR_DELETE_DB_DELETE_ERROR", "I_WASERVER_GAME__RESULT_CODE__CHAR_DELETE_DB_DELETE_ERROR", 220 },
 };
 static const ProtobufCIntRange i_waserver_game__result_code__value_ranges[] = {
-{0, 0},{10, 1},{20, 2},{100, 3},{200, 6},{210, 8},{0, 9}
+{0, 0},{10, 1},{20, 2},{100, 3},{200, 6},{210, 7},{220, 11},{0, 12}
 };
-const ProtobufCEnumValueIndex i_waserver_game__result_code__enum_values_by_name[9] =
+const ProtobufCEnumValueIndex i_waserver_game__result_code__enum_values_by_name[12] =
 {
   { "AUTH_RESPONSE_ACCOUNT_NOEXIST", 4 },
   { "AUTH_RESPONSE_DB_QUERY_ERROR", 3 },
   { "AUTH_RESPONSE_HASH_CHECK_ERROR", 5 },
-  { "CHAR_CREATE_DB_INSERT_ERROR", 7 },
-  { "CHAR_CREATE_ILLEGAL_NAME", 6 },
-  { "CHAR_DELETE_DB_DELETE_ERROR", 8 },
+  { "CHAR_CREATE_DB_INSERT_ERROR", 10 },
+  { "CHAR_CREATE_DB_QUERY_ERROR", 8 },
+  { "CHAR_CREATE_NAME_ALREADY_EXISTS", 9 },
+  { "CHAR_CREATE_NAME_EMPTY", 7 },
+  { "CHAR_DELETE_DB_DELETE_ERROR", 11 },
+  { "CHAR_ENUM_DB_QUERY_ERROR", 6 },
   { "SUCCESS", 0 },
   { "UNKNOWN_ERROR", 1 },
   { "UNPACK_MESSAGE_ERROR", 2 },
@@ -1074,11 +1080,11 @@ const ProtobufCEnumDescriptor i_waserver_game__result_code__descriptor =
   "resultCode",
   "IWAserverGame__ResultCode",
   "iWAserverGame",
-  9,
+  12,
   i_waserver_game__result_code__enum_values_by_number,
-  9,
+  12,
   i_waserver_game__result_code__enum_values_by_name,
-  6,
+  7,
   i_waserver_game__result_code__value_ranges,
   NULL,NULL,NULL,NULL   /* reserved[1234] */
 };

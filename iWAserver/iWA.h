@@ -85,24 +85,24 @@ typedef unsigned int       iWAbool;
 
 enum
 {
-    iWAenum_AUTH_CMD_REG            = 0x00,
-    iWAenum_AUTH_CMD_LOGON        = 0x01,
-    iWAenum_AUTH_CMD_PROOF    = 0x02,
-    iWAenum_AUTH_CMD_SERVER_LIST       = 0x03,
+    iWAenum_AUTH_CMD_REG            = 0x01,
+    iWAenum_AUTH_CMD_LOGON        = 0x02,
+    iWAenum_AUTH_CMD_PROOF    = 0x03,
+    iWAenum_AUTH_CMD_SERVER_LIST       = 0x04,
 };
 
 enum
 {
-    iWAenum_GAME_CMD_AUTH_CHANLLEGE        = 0x00,
-    iWAenum_GAME_CMD_AUTH_SEESION            = 0x01,
-    iWAenum_GAME_CMD_AUTH_RESPONSE          = 0x02,
-    iWAenum_GAME_CMD_CHAR_ENUM       = 0x03,
-    iWAenum_GAME_CMD_CHAR_CREATE       = 0x04,
-    iWAenum_GAME_CMD_CHAR_DELETE       = 0x05,
-    iWAenum_GAME_CMD_PLAYER_LOGIN       = 0x06,    
+    iWAenum_GAME_CMD_AUTH_CHANLLEGE        = 0x01,
+    iWAenum_GAME_CMD_AUTH_SEESION            = 0x02,
+    iWAenum_GAME_CMD_AUTH_RESPONSE          = 0x03,
+    iWAenum_GAME_CMD_CHAR_ENUM       = 0x04,
+    iWAenum_GAME_CMD_CHAR_CREATE       = 0x05,
+    iWAenum_GAME_CMD_CHAR_DELETE       = 0x06,
+    iWAenum_GAME_CMD_PLAYER_LOGIN       = 0x07,    
 };
 
-
+#if 0
 enum
 {
     iWAenum_WORLD_MSG_AUTH                                =  0x00, 
@@ -116,10 +116,11 @@ enum
     iWAenum_WORLD_STATUS_OK                    =  0x00, 
     iWAenum_WORLD_STATUS_FAIL
 };
+#endif
 
 enum
 {
-    iWAenum_CHARACTER_RACE_DOULUO    = 0,
+    iWAenum_CHARACTER_RACE_DOULUO    = 1,
     iWAenum_CHARACTER_RACE_GUISHA,
     iWAenum_CHARACTER_RACE_LINGZUN,
     iWAenum_CHARACTER_RACE_WUHUANG
@@ -127,12 +128,12 @@ enum
 
 enum
 {
-    iWAenum_CHARACTER_NATION_HAOTIAN    = 0,
+    iWAenum_CHARACTER_NATION_HAOTIAN    = 1,
     iWAenum_CHARACTER_NATION_WUCHEN,
     iWAenum_CHARACTER_NATION_CANGHAI
 };
 
-
+#if 0
 enum
 {
     iWAenum_AUTH_MSG_AUTH_OK                                         = 0x00,
@@ -146,10 +147,11 @@ enum
     iWAenum_AUTH_MSG_REG_USERNAME_EXIST                    = 0x12,    
     iWAenum_AUTH_MSG_REG_CREATE_FAIL                           = 0x13,        
 };
+#endif
 
 enum
 {
-    iWAenum_AUTH_SERVER_STATUS_NEW,
+    iWAenum_AUTH_SERVER_STATUS_NEW   = 1,
     iWAenum_AUTH_SERVER_STATUS_HOT,
     iWAenum_AUTH_SERVER_STATUS_MAINTAIN,
 };
@@ -212,15 +214,31 @@ typedef struct
 
 #define iWAmacro_AUTHSERVER_ACCOUNTNAME_LENGTH  (32)
 #define iWAmacro_GAMESERVER_SEESION_KEY_SIZE     (90)
+#define iWAmacro_SERVER_SQL_BUF_SIZE           (512)
+
+enum
+{
+    iWAenum_AUTHSERVER_SESSION_STATUS_UNLOGON = 0,
+    iWAenum_AUTHSERVER_SESSION_STATUS_LOGONING,
+    iWAenum_AUTHSERVER_SESSION_STATUS_LOGONED,
+};
+
+enum
+{
+    iWAenum_GAMESERVER_SESSION_STATUS_UNAUTH = 0,
+    iWAenum_GAMESERVER_SESSION_STATUS_AUTHED,
+};
 
 typedef struct
 {
     iWAbool f_used;
     struct bufferevent *bev;
+    iWAuint32 status;
     iWAint8 account[iWAmacro_AUTHSERVER_ACCOUNTNAME_LENGTH];
     iWAuint32 UID;
     BIGNUM N, g, s, v, b, B;
     iWAbool f_simple_auth;
+    iWAint8 sql[iWAmacro_SERVER_SQL_BUF_SIZE];
 }iWAstruct_AuthSession_Session;
 
 
@@ -228,13 +246,14 @@ typedef struct
 {
     iWAbool f_used;
     struct bufferevent *bev;
+    iWAuint32 status;
     iWAuint32 server_seed;
     iWAint8 account[iWAmacro_AUTHSERVER_ACCOUNTNAME_LENGTH];
     iWAuint32 UID, CID;
     iWAuint8 key[iWAmacro_GAMESERVER_SEESION_KEY_SIZE];
     iWAuint16 key_size;
-    iWAbool auth_pass;
     iWAuint8 send_i, send_j, recv_i, recv_j;
+    iWAint8 sql[iWAmacro_SERVER_SQL_BUF_SIZE];
 }iWAstruct_GameSession_Session;
 
 

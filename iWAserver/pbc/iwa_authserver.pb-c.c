@@ -751,7 +751,7 @@ const ProtobufCMessageDescriptor i_waserver_auth__server_list_server__server__ch
   (ProtobufCMessageInit) i_waserver_auth__server_list_server__server__character__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-static const ProtobufCFieldDescriptor i_waserver_auth__server_list_server__server__field_descriptors[9] =
+static const ProtobufCFieldDescriptor i_waserver_auth__server_list_server__server__field_descriptors[8] =
 {
   {
     "sid",
@@ -838,20 +838,8 @@ static const ProtobufCFieldDescriptor i_waserver_auth__server_list_server__serve
     0,NULL,NULL    /* reserved1,reserved2, etc */
   },
   {
-    "char_num",
-    8,
-    PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
-    0,   /* quantifier_offset */
-    PROTOBUF_C_OFFSETOF(IWAserverAuth__ServerListServer__Server, char_num),
-    NULL,
-    NULL,
-    0,            /* packed */
-    0,NULL,NULL    /* reserved1,reserved2, etc */
-  },
-  {
     "characters",
-    9,
+    8,
     PROTOBUF_C_LABEL_REPEATED,
     PROTOBUF_C_TYPE_MESSAGE,
     PROTOBUF_C_OFFSETOF(IWAserverAuth__ServerListServer__Server, n_characters),
@@ -864,8 +852,7 @@ static const ProtobufCFieldDescriptor i_waserver_auth__server_list_server__serve
 };
 static const unsigned i_waserver_auth__server_list_server__server__field_indices_by_name[] = {
   5,   /* field[5] = address */
-  7,   /* field[7] = char_num */
-  8,   /* field[8] = characters */
+  7,   /* field[7] = characters */
   4,   /* field[4] = hit */
   3,   /* field[3] = name */
   6,   /* field[6] = port */
@@ -876,7 +863,7 @@ static const unsigned i_waserver_auth__server_list_server__server__field_indices
 static const ProtobufCIntRange i_waserver_auth__server_list_server__server__number_ranges[1 + 1] =
 {
   { 1, 0 },
-  { 0, 9 }
+  { 0, 8 }
 };
 const ProtobufCMessageDescriptor i_waserver_auth__server_list_server__server__descriptor =
 {
@@ -886,7 +873,7 @@ const ProtobufCMessageDescriptor i_waserver_auth__server_list_server__server__de
   "IWAserverAuth__ServerListServer__Server",
   "iWAserverAuth",
   sizeof(IWAserverAuth__ServerListServer__Server),
-  9,
+  8,
   i_waserver_auth__server_list_server__server__field_descriptors,
   i_waserver_auth__server_list_server__server__field_indices_by_name,
   1,  i_waserver_auth__server_list_server__server__number_ranges,
@@ -896,13 +883,13 @@ const ProtobufCMessageDescriptor i_waserver_auth__server_list_server__server__de
 static const ProtobufCFieldDescriptor i_waserver_auth__server_list_server__field_descriptors[2] =
 {
   {
-    "num",
+    "result",
     1,
     PROTOBUF_C_LABEL_REQUIRED,
-    PROTOBUF_C_TYPE_UINT32,
+    PROTOBUF_C_TYPE_ENUM,
     0,   /* quantifier_offset */
-    PROTOBUF_C_OFFSETOF(IWAserverAuth__ServerListServer, num),
-    NULL,
+    PROTOBUF_C_OFFSETOF(IWAserverAuth__ServerListServer, result),
+    &i_waserver_auth__result_code__descriptor,
     NULL,
     0,            /* packed */
     0,NULL,NULL    /* reserved1,reserved2, etc */
@@ -921,7 +908,7 @@ static const ProtobufCFieldDescriptor i_waserver_auth__server_list_server__field
   },
 };
 static const unsigned i_waserver_auth__server_list_server__field_indices_by_name[] = {
-  0,   /* field[0] = num */
+  0,   /* field[0] = result */
   1,   /* field[1] = servers */
 };
 static const ProtobufCIntRange i_waserver_auth__server_list_server__number_ranges[1 + 1] =
@@ -944,14 +931,16 @@ const ProtobufCMessageDescriptor i_waserver_auth__server_list_server__descriptor
   (ProtobufCMessageInit) i_waserver_auth__server_list_server__init,
   NULL,NULL,NULL    /* reserved[123] */
 };
-const ProtobufCEnumValue i_waserver_auth__result_code__enum_values_by_number[13] =
+const ProtobufCEnumValue i_waserver_auth__result_code__enum_values_by_number[16] =
 {
   { "SUCCESS", "I_WASERVER_AUTH__RESULT_CODE__SUCCESS", 0 },
   { "UNKNOWN_ERROR", "I_WASERVER_AUTH__RESULT_CODE__UNKNOWN_ERROR", 10 },
   { "UNPACK_MESSAGE_ERROR", "I_WASERVER_AUTH__RESULT_CODE__UNPACK_MESSAGE_ERROR", 20 },
   { "REG_USERNAME_EMPTY", "I_WASERVER_AUTH__RESULT_CODE__REG_USERNAME_EMPTY", 100 },
   { "REG_PASSWORD_EMPTY", "I_WASERVER_AUTH__RESULT_CODE__REG_PASSWORD_EMPTY", 101 },
-  { "REG_DB_INSERT_ERROR", "I_WASERVER_AUTH__RESULT_CODE__REG_DB_INSERT_ERROR", 102 },
+  { "REG_DB_QUERY_ERROR", "I_WASERVER_AUTH__RESULT_CODE__REG_DB_QUERY_ERROR", 102 },
+  { "REG_USERNAME_ALREADY_EXISTS", "I_WASERVER_AUTH__RESULT_CODE__REG_USERNAME_ALREADY_EXISTS", 103 },
+  { "REG_DB_INSERT_ERROR", "I_WASERVER_AUTH__RESULT_CODE__REG_DB_INSERT_ERROR", 104 },
   { "LOGON_USERNAME_EMPTY", "I_WASERVER_AUTH__RESULT_CODE__LOGON_USERNAME_EMPTY", 200 },
   { "LOGON_DB_QUERY_ERROR", "I_WASERVER_AUTH__RESULT_CODE__LOGON_DB_QUERY_ERROR", 201 },
   { "LOGON_ACCOUNT_NOEXIST", "I_WASERVER_AUTH__RESULT_CODE__LOGON_ACCOUNT_NOEXIST", 202 },
@@ -959,22 +948,26 @@ const ProtobufCEnumValue i_waserver_auth__result_code__enum_values_by_number[13]
   { "PROOF_M1VALUE_INCORRECT", "I_WASERVER_AUTH__RESULT_CODE__PROOF_M1VALUE_INCORRECT", 301 },
   { "PROOF_MVALUE_UNMATCH", "I_WASERVER_AUTH__RESULT_CODE__PROOF_MVALUE_UNMATCH", 302 },
   { "PROOF_DB_UPDATE_ERROR", "I_WASERVER_AUTH__RESULT_CODE__PROOF_DB_UPDATE_ERROR", 303 },
+  { "SERVER_LIST_DB_QUERY_ERROR", "I_WASERVER_AUTH__RESULT_CODE__SERVER_LIST_DB_QUERY_ERROR", 400 },
 };
 static const ProtobufCIntRange i_waserver_auth__result_code__value_ranges[] = {
-{0, 0},{10, 1},{20, 2},{100, 3},{200, 6},{300, 9},{0, 13}
+{0, 0},{10, 1},{20, 2},{100, 3},{200, 8},{300, 11},{400, 15},{0, 16}
 };
-const ProtobufCEnumValueIndex i_waserver_auth__result_code__enum_values_by_name[13] =
+const ProtobufCEnumValueIndex i_waserver_auth__result_code__enum_values_by_name[16] =
 {
-  { "LOGON_ACCOUNT_NOEXIST", 8 },
-  { "LOGON_DB_QUERY_ERROR", 7 },
-  { "LOGON_USERNAME_EMPTY", 6 },
-  { "PROOF_AVALUE_INCORRECT", 9 },
-  { "PROOF_DB_UPDATE_ERROR", 12 },
-  { "PROOF_M1VALUE_INCORRECT", 10 },
-  { "PROOF_MVALUE_UNMATCH", 11 },
-  { "REG_DB_INSERT_ERROR", 5 },
+  { "LOGON_ACCOUNT_NOEXIST", 10 },
+  { "LOGON_DB_QUERY_ERROR", 9 },
+  { "LOGON_USERNAME_EMPTY", 8 },
+  { "PROOF_AVALUE_INCORRECT", 11 },
+  { "PROOF_DB_UPDATE_ERROR", 14 },
+  { "PROOF_M1VALUE_INCORRECT", 12 },
+  { "PROOF_MVALUE_UNMATCH", 13 },
+  { "REG_DB_INSERT_ERROR", 7 },
+  { "REG_DB_QUERY_ERROR", 5 },
   { "REG_PASSWORD_EMPTY", 4 },
+  { "REG_USERNAME_ALREADY_EXISTS", 6 },
   { "REG_USERNAME_EMPTY", 3 },
+  { "SERVER_LIST_DB_QUERY_ERROR", 15 },
   { "SUCCESS", 0 },
   { "UNKNOWN_ERROR", 1 },
   { "UNPACK_MESSAGE_ERROR", 2 },
@@ -986,11 +979,11 @@ const ProtobufCEnumDescriptor i_waserver_auth__result_code__descriptor =
   "resultCode",
   "IWAserverAuth__ResultCode",
   "iWAserverAuth",
-  13,
+  16,
   i_waserver_auth__result_code__enum_values_by_number,
-  13,
+  16,
   i_waserver_auth__result_code__enum_values_by_name,
-  6,
+  7,
   i_waserver_auth__result_code__value_ranges,
   NULL,NULL,NULL,NULL   /* reserved[1234] */
 };

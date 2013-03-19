@@ -9,7 +9,9 @@ enum resultCode
 
     REG_USERNAME_EMPTY = 100;
     REG_PASSWORD_EMPTY = 101;
-    REG_DB_INSERT_ERROR = 102;
+    REG_DB_QUERY_ERROR = 102;
+    REG_USERNAME_ALREADY_EXISTS = 103;
+    REG_DB_INSERT_ERROR = 104;
 
     LOGON_USERNAME_EMPTY = 200;
     LOGON_DB_QUERY_ERROR = 201;
@@ -19,6 +21,9 @@ enum resultCode
     PROOF_M1VALUE_INCORRECT = 301;
     PROOF_MVALUE_UNMATCH = 302;
     PROOF_DB_UPDATE_ERROR = 303;
+
+    SERVER_LIST_DB_QUERY_ERROR = 400;
+
 }
 
 message LogRegClient
@@ -81,11 +86,10 @@ message ServerListServer
         optional string hit = 5;
         required string address = 6;
         required uint32 port = 7;
-        required uint32 char_num = 8;
-        repeated Character characters = 9;
+        repeated Character characters = 8;
     }
 
-    required uint32 num = 1;
+    required resultCode result = 1;
     repeated Server servers = 2;
 }
 

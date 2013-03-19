@@ -24,7 +24,8 @@ iWAstruct_GameSession_Session* iWA_GameSession_AllocSession(struct bufferevent *
         
         sessions[i].f_used = 1;
         sessions[i].bev = bev;
-
+        sessions[i].status = iWAenum_GAMESERVER_SESSION_STATUS_UNAUTH;
+        
         return &sessions[i];
     }
 

@@ -26,14 +26,17 @@ typedef enum _IWAserverAuth__ResultCode {
   I_WASERVER_AUTH__RESULT_CODE__UNPACK_MESSAGE_ERROR = 20,
   I_WASERVER_AUTH__RESULT_CODE__REG_USERNAME_EMPTY = 100,
   I_WASERVER_AUTH__RESULT_CODE__REG_PASSWORD_EMPTY = 101,
-  I_WASERVER_AUTH__RESULT_CODE__REG_DB_INSERT_ERROR = 102,
+  I_WASERVER_AUTH__RESULT_CODE__REG_DB_QUERY_ERROR = 102,
+  I_WASERVER_AUTH__RESULT_CODE__REG_USERNAME_ALREADY_EXISTS = 103,
+  I_WASERVER_AUTH__RESULT_CODE__REG_DB_INSERT_ERROR = 104,
   I_WASERVER_AUTH__RESULT_CODE__LOGON_USERNAME_EMPTY = 200,
   I_WASERVER_AUTH__RESULT_CODE__LOGON_DB_QUERY_ERROR = 201,
   I_WASERVER_AUTH__RESULT_CODE__LOGON_ACCOUNT_NOEXIST = 202,
   I_WASERVER_AUTH__RESULT_CODE__PROOF_AVALUE_INCORRECT = 300,
   I_WASERVER_AUTH__RESULT_CODE__PROOF_M1VALUE_INCORRECT = 301,
   I_WASERVER_AUTH__RESULT_CODE__PROOF_MVALUE_UNMATCH = 302,
-  I_WASERVER_AUTH__RESULT_CODE__PROOF_DB_UPDATE_ERROR = 303
+  I_WASERVER_AUTH__RESULT_CODE__PROOF_DB_UPDATE_ERROR = 303,
+  I_WASERVER_AUTH__RESULT_CODE__SERVER_LIST_DB_QUERY_ERROR = 400
 } IWAserverAuth__ResultCode;
 
 /* --- messages --- */
@@ -131,19 +134,18 @@ struct  _IWAserverAuth__ServerListServer__Server
   char *hit;
   char *address;
   uint32_t port;
-  uint32_t char_num;
   size_t n_characters;
   IWAserverAuth__ServerListServer__Server__Character **characters;
 };
 #define I_WASERVER_AUTH__SERVER_LIST_SERVER__SERVER__INIT \
  { PROTOBUF_C_MESSAGE_INIT (&i_waserver_auth__server_list_server__server__descriptor) \
-    , 0, 0, 0, NULL, NULL, NULL, 0, 0, 0,NULL }
+    , 0, 0, 0, NULL, NULL, NULL, 0, 0,NULL }
 
 
 struct  _IWAserverAuth__ServerListServer
 {
   ProtobufCMessage base;
-  uint32_t num;
+  IWAserverAuth__ResultCode result;
   size_t n_servers;
   IWAserverAuth__ServerListServer__Server **servers;
 };

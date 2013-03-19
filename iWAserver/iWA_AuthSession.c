@@ -24,6 +24,7 @@ iWAstruct_AuthSession_Session* iWA_AuthSession_AllocSession(struct bufferevent *
         
         sessions[i].f_used = 1;
         sessions[i].bev = bev;
+        sessions[i].status = iWAenum_AUTHSERVER_SESSION_STATUS_UNLOGON;
 
         return &sessions[i];
     }

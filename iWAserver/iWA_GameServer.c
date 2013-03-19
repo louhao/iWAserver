@@ -26,13 +26,28 @@ typedef struct
     iWAuint8 data[4];
 }iWAstruct_GameServer_Packet;
 
+
+
+typedef struct
+{
+    iWAuint32 SID;
+    struct event *timer_event;
+    struct timeval timer_interval;
+    iWAstruct_GameServer_Packet *packet_queue_header;
+    iWAstruct_GameServer_Packet *packet_queue_tail;
+    iWAuint8 send_packet_buf[1024];
+}iWAstruct_GameServer_InfoBlock;
+
+static iWAstruct_GameServer_InfoBlock server_info_block = {0};
+
+#if 0
 static struct event *timer_event;
 static struct timeval timer_interval;
 
 static iWAstruct_GameServer_Packet *packet_queue_header = NULL;
 static iWAstruct_GameServer_Packet *packet_queue_tail = NULL;
 static iWAuint8 send_packet_buf[1024];
-
+#endif
 
 static iWAbool server_init(void);
 static void listen_event_cb(evutil_socket_t listener, iWAint16 event, void *arg);
@@ -63,11 +78,11 @@ static iWAbool check_packet_length(iWAstruct_GameSession_Session *session, iWAui
     iWA_Assert(session != NULL);
     iWA_Assert(header != NULL);
 
-    iWA_Debug("check_packet_length()");
+    //iWA_Debug("check_packet_length()");
 
-    if(session->auth_pass)
+    if(session->status == iWAenum_GAMESERVER_SESSION_STATUS_AUTHED)
     {
-    iWA_Dump(header, iWAmacro_GAMESERVER_PACKET_HEADER_SIZE);
+    //iWA_Dump(header, iWAmacro_GAMESERVER_PACKET_HEADER_SIZE);
 
         recv_i = session->recv_i;
         recv_j = session->recv_j;
@@ -81,14 +96,14 @@ static iWAbool check_packet_length(iWAstruct_GameSession_Session *session, iWAui
         
         }
 
-    iWA_Dump(header, iWAmacro_GAMESERVER_PACKET_HEADER_SIZE);
+    //iWA_Dump(header, iWAmacro_GAMESERVER_PACKET_HEADER_SIZE);
     }
     
 
     packet_len = iWA_Net_ReadPacketUint16(header);
     length_enough = (length >= (packet_len + iWAmacro_GAMESERVER_PACKET_HEADER_SIZE));
 
-    if(session->auth_pass && length_enough)
+    if(session->status == iWAenum_GAMESERVER_SESSION_STATUS_AUTHED && length_enough)
     {
         session->recv_i = recv_i;
         session->recv_j = recv_j;
@@ -107,8 +122,8 @@ static void encrypt_packet_header(iWAstruct_GameSession_Session *session, iWAuin
     iWA_Assert(session != NULL);
     iWA_Assert(header != NULL);
     
-    iWA_Debug("encrypt_packet_header()");
-    iWA_Dump(header, iWAmacro_GAMESERVER_PACKET_HEADER_SIZE);
+    //iWA_Debug("encrypt_packet_header()");
+    //iWA_Dump(header, iWAmacro_GAMESERVER_PACKET_HEADER_SIZE);
 
     for(t = 0; t < iWAmacro_GAMESERVER_PACKET_HEADER_SIZE; t++)
     {
@@ -118,7 +133,7 @@ static void encrypt_packet_header(iWAstruct_GameSession_Session *session, iWAuin
         header[t] = session->send_j = x;
     }
 
-    iWA_Dump(header, iWAmacro_GAMESERVER_PACKET_HEADER_SIZE);
+    //iWA_Dump(header, iWAmacro_GAMESERVER_PACKET_HEADER_SIZE);
 }
 
 
@@ -138,6 +153,7 @@ static void write_auth_chanllege_server_packet(iWAstruct_GameSession_Session *se
     BIGNUM  ss;
     iWAuint8 buf[4];
     iWAint32 len;
+    iWAuint8 *pkg = server_info_block.send_packet_buf;
 
     iWA_Info("write_auth_chanllege_server_packet()");
 
@@ -150,11 +166,11 @@ static void write_auth_chanllege_server_packet(iWAstruct_GameSession_Session *se
 
     i_waserver_game__auth_challenge_server__init(&chan);
     chan.seed = session->server_seed;
-    len = i_waserver_game__auth_challenge_server__pack(&chan, send_packet_buf+4);
-    iWA_Net_WritePacketUint16(send_packet_buf, len);
-    iWA_Net_WritePacketUint16(send_packet_buf+2, iWAenum_GAME_CMD_AUTH_CHANLLEGE);
+    len = i_waserver_game__auth_challenge_server__pack(&chan, pkg+4);
+    iWA_Net_WritePacketUint16(pkg, len);
+    iWA_Net_WritePacketUint16(pkg+2, iWAenum_GAME_CMD_AUTH_CHANLLEGE);
 
-    write_data_bufferevent(session, send_packet_buf, len+4);
+    write_data_bufferevent(session, pkg, len+4);
 }
 
 
@@ -166,15 +182,15 @@ static void handle_auth_session_client_packet(iWAstruct_GameServer_Packet *pkt)
     iWAstruct_Mysql_QueryResult *result = NULL;
     SHA1Context *sha_ctx;
     iWAint32 len;
-    iWAint8 sql[100];
     iWAint32 reval = I_WASERVER_GAME__RESULT_CODE__UNKNOWN_ERROR;
     BIGNUM K, D, *I;
     iWAuint8 digest[SHA1HashSize+1];
+    iWAuint8 *pkg = server_info_block.send_packet_buf;
     
     iWA_Info("handle_auth_session_client_packet()");
 
     session = pkt->session;
-    session->auth_pass = 0;
+    session->status = iWAenum_GAMESERVER_SESSION_STATUS_UNAUTH;
 
     /* unpack message */
     sess = i_waserver_game__auth_session_client__unpack(NULL, pkt->len, pkt->data);
@@ -188,9 +204,9 @@ static void handle_auth_session_client_packet(iWAstruct_GameServer_Packet *pkt)
     iWA_Std_strcpy(session->account, sess->username);
 
     /* query seesion-key from account-db */
-    iWA_Std_sprintf(sql, "select UID, sessionkey from users where username = '%s';", sess->username);
+    iWA_Std_sprintf(session->sql, "select UID, sessionkey from users where username = '%s';", sess->username);
     
-    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseAccount, sql))
+    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseAccount, session->sql))
     {
         reval = I_WASERVER_GAME__RESULT_CODE__AUTH_RESPONSE_DB_QUERY_ERROR;    
         goto do_response_and_free;
@@ -231,8 +247,8 @@ static void handle_auth_session_client_packet(iWAstruct_GameServer_Packet *pkt)
     /* compare D value */
     if(!iWA_Std_memcmp(digest, sess->d.data, SHA1HashSize))
     {
-        session->auth_pass = 1;
         reval = I_WASERVER_GAME__RESULT_CODE__SUCCESS;
+        session->status = iWAenum_GAMESERVER_SESSION_STATUS_AUTHED;
     }
     else
     {
@@ -244,10 +260,10 @@ do_response_and_free:
     /* write response packet */
     i_waserver_game__auth_response_server__init(&rsp);
     rsp.result = reval;
-    len = i_waserver_game__auth_response_server__pack(&rsp, send_packet_buf+4);
-    iWA_Net_WritePacketUint16(send_packet_buf, len);
-    iWA_Net_WritePacketUint16(send_packet_buf+2, iWAenum_GAME_CMD_AUTH_RESPONSE);
-    write_data_bufferevent(session, send_packet_buf, len+4);
+    len = i_waserver_game__auth_response_server__pack(&rsp, pkg+4);
+    iWA_Net_WritePacketUint16(pkg, len);
+    iWA_Net_WritePacketUint16(pkg+2, iWAenum_GAME_CMD_AUTH_RESPONSE);
+    write_data_bufferevent(session, pkg, len+4);
 
     /* do free */
     if(sess != NULL)    i_waserver_game__auth_session_client__free_unpacked(sess, NULL);
@@ -258,12 +274,13 @@ do_response_and_free:
 static void handle_char_enum_client_packet(iWAstruct_GameServer_Packet *pkt)
 {
     iWAstruct_GameSession_Session* session;
-    iWAint8 sql[100];
     iWAstruct_Mysql_QueryResult *result = NULL;
     iWAint8 **row;
     IWAserverGame__CharEnumServer   char_enum;
     IWAserverGame__Character *chr;
     iWAuint32 i, len = 0;
+    iWAuint8 *pkg = server_info_block.send_packet_buf;
+    iWAint32 reval = I_WASERVER_GAME__RESULT_CODE__UNKNOWN_ERROR;
 
     
     iWA_Info("handle_char_enum_client_packet()");
@@ -272,16 +289,23 @@ static void handle_char_enum_client_packet(iWAstruct_GameServer_Packet *pkt)
 
     /* init iWAstruct_GameSession_Session */
     i_waserver_game__char_enum_server__init(&char_enum);
-    char_enum.n_characters = 0;
 
     /* query character info */
-    iWA_Std_sprintf(sql, "select CID, name, grade, race, nation from characters where UID = %d;", session->UID);
+    iWA_Std_sprintf(session->sql, "select CID, name, grade, race, nation from characters where UID = %d;", session->UID);
     
-    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseGame, sql))   goto do_response_and_free;
-
+    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseGame, session->sql))
+    {
+        reval = I_WASERVER_GAME__RESULT_CODE__CHAR_ENUM_DB_QUERY_ERROR;
+        goto do_response_and_free;
+    }
+    
     result = iWA_Mysql_DatabaseStoreResult(iWA_Global_DatabaseGame);
-    if(result == NULL)   goto do_response_and_free;
-
+    if(result == NULL)
+    {
+        reval = I_WASERVER_GAME__RESULT_CODE__CHAR_ENUM_DB_QUERY_ERROR;
+        goto do_response_and_free;
+    }
+    
     /* fill character info */
     if(result->num > 0) 
         char_enum.characters = (IWAserverGame__Character**)iWA_Malloc(sizeof(IWAserverGame__Character*) * (result->num));
@@ -302,16 +326,17 @@ static void handle_char_enum_client_packet(iWAstruct_GameServer_Packet *pkt)
         iWA_Mysql_DatabaseNextRow(result);
     }
 
-    char_enum.char_num = char_enum.n_characters;
+    reval = I_WASERVER_GAME__RESULT_CODE__SUCCESS;
 
 do_response_and_free:
 
     /* write response packet */
-    len = i_waserver_game__char_enum_server__pack(&char_enum, send_packet_buf+4);
-    iWA_Net_WritePacketUint16(send_packet_buf, len);
-    iWA_Net_WritePacketUint16(send_packet_buf+2, iWAenum_GAME_CMD_CHAR_ENUM);
-    encrypt_packet_header(session, send_packet_buf);
-    write_data_bufferevent(session, send_packet_buf, len+4);
+    char_enum.result = reval;
+    len = i_waserver_game__char_enum_server__pack(&char_enum, pkg+4);
+    iWA_Net_WritePacketUint16(pkg, len);
+    iWA_Net_WritePacketUint16(pkg+2, iWAenum_GAME_CMD_CHAR_ENUM);
+    encrypt_packet_header(session, pkg);
+    write_data_bufferevent(session, pkg, len+4);
 
     /* free sql result */
     if(result != NULL)  iWA_Mysql_DatabaseFreeResult(result);
@@ -335,9 +360,10 @@ static void handle_char_create_client_packet(iWAstruct_GameServer_Packet *pkt)
     iWAstruct_GameSession_Session* session;
     iWAuint32 insert_id;
     iWAint32 len;
-    iWAint8 sql[100];
     iWAint32 reval = I_WASERVER_GAME__RESULT_CODE__UNKNOWN_ERROR;
-    
+    iWAuint8 *pkg = server_info_block.send_packet_buf;
+    iWAstruct_Mysql_QueryResult *result = NULL;
+
     iWA_Info("handle_char_create_client_packet()");
 
     session = pkt->session;
@@ -352,15 +378,36 @@ static void handle_char_create_client_packet(iWAstruct_GameServer_Packet *pkt)
 
     if(char_create->name == NULL || char_create->name[0] == 0x00)
     {
-        reval = I_WASERVER_GAME__RESULT_CODE__CHAR_CREATE_ILLEGAL_NAME;
+        reval = I_WASERVER_GAME__RESULT_CODE__CHAR_CREATE_NAME_EMPTY;
         goto do_response_and_free;
     }
+
+    /* check if character name already exists */
+    iWA_Std_sprintf(session->sql, "select CID from characters where name = '%s';", char_create->name);
+
+    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseGame, session->sql))
+    {
+        reval = I_WASERVER_GAME__RESULT_CODE__CHAR_CREATE_DB_QUERY_ERROR;
+        goto do_response_and_free;
+    }
+
+    result = iWA_Mysql_DatabaseStoreResult(iWA_Global_DatabaseGame);
+    if(result == NULL)
+    {
+        reval = I_WASERVER_GAME__RESULT_CODE__CHAR_CREATE_DB_QUERY_ERROR;
+        goto do_response_and_free;
+    }
+    if(result->num > 0)
+    {
+        reval = I_WASERVER_GAME__RESULT_CODE__CHAR_CREATE_NAME_ALREADY_EXISTS;
+        goto do_response_and_free;
+    }    
     
     /* insert character into game-db */
-    iWA_Std_sprintf(sql, "insert into characters (UID, name, grade, race, nation) values (%d, '%s', %d, %d, %d);", 
+    iWA_Std_sprintf(session->sql, "insert into characters (UID, name, grade, race, nation) values (%d, '%s', %d, %d, %d);", 
                             session->UID, char_create->name, 1, char_create->race, char_create->nation);
     
-    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseGame, sql))
+    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseGame, session->sql))
     {
         reval = I_WASERVER_GAME__RESULT_CODE__CHAR_CREATE_DB_INSERT_ERROR;
         goto do_response_and_free;
@@ -368,6 +415,16 @@ static void handle_char_create_client_packet(iWAstruct_GameServer_Packet *pkt)
     
     insert_id = iWA_Mysql_DatabaseInsertId(iWA_Global_DatabaseGame);
     if(insert_id == 0)
+    {
+        reval = I_WASERVER_GAME__RESULT_CODE__CHAR_CREATE_DB_INSERT_ERROR;
+        goto do_response_and_free;
+    }
+
+    /* insert character into account-db */
+    iWA_Std_sprintf(session->sql, "insert into characters (SID, UID, CID, name, grade, race, nation) values (%d, %d, %d, '%s', %d, %d, %d);", 
+                            server_info_block.SID, session->UID, insert_id, char_create->name, 1, char_create->race, char_create->nation);
+    
+    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseAccount, session->sql))
     {
         reval = I_WASERVER_GAME__RESULT_CODE__CHAR_CREATE_DB_INSERT_ERROR;
         goto do_response_and_free;
@@ -381,14 +438,15 @@ do_response_and_free:
     i_waserver_game__char_create_server__init(&rsp);
     rsp.result = reval;
     rsp.cid = insert_id;
-    len = i_waserver_game__char_create_server__pack(&rsp, send_packet_buf+4);
-    iWA_Net_WritePacketUint16(send_packet_buf, len);
-    iWA_Net_WritePacketUint16(send_packet_buf+2, iWAenum_GAME_CMD_CHAR_CREATE);
-    encrypt_packet_header(session, send_packet_buf);
-    write_data_bufferevent(session, send_packet_buf, len+4);
+    len = i_waserver_game__char_create_server__pack(&rsp, pkg+4);
+    iWA_Net_WritePacketUint16(pkg, len);
+    iWA_Net_WritePacketUint16(pkg+2, iWAenum_GAME_CMD_CHAR_CREATE);
+    encrypt_packet_header(session, pkg);
+    write_data_bufferevent(session, pkg, len+4);
 
     /* do free */
     if(char_create!= NULL)    i_waserver_game__char_create_client__free_unpacked(char_create, NULL);
+    if(result != NULL)  iWA_Mysql_DatabaseFreeResult(result);
 }
 
 static void handle_char_delete_client_packet(iWAstruct_GameServer_Packet *pkt)
@@ -397,8 +455,8 @@ static void handle_char_delete_client_packet(iWAstruct_GameServer_Packet *pkt)
     IWAserverGame__CharDeleteServer rsp;
     iWAstruct_GameSession_Session* session;
     iWAint32 len;
-    iWAint8 sql[100];
     iWAint32 reval = I_WASERVER_GAME__RESULT_CODE__UNKNOWN_ERROR;
+    iWAuint8 *pkg = server_info_block.send_packet_buf;
     
     iWA_Info("handle_char_delete_client_packet()");
 
@@ -413,13 +471,23 @@ static void handle_char_delete_client_packet(iWAstruct_GameServer_Packet *pkt)
     }
     
     /* delete character from game-db */
-    iWA_Std_sprintf(sql, "delete from characters where CID = %d;", char_delete->cid);
+    iWA_Std_sprintf(session->sql, "delete from characters where CID = %d;", char_delete->cid);
     
-    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseGame, sql))
+    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseGame, session->sql))
     {
         reval = I_WASERVER_GAME__RESULT_CODE__CHAR_DELETE_DB_DELETE_ERROR;
         goto do_response_and_free;
     }
+
+    /* delete character from account-db */
+    iWA_Std_sprintf(session->sql, "delete from characters where SID = %d and UID = %d and CID = %d;", server_info_block.SID, session->UID, char_delete->cid);
+    
+    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseAccount, session->sql))
+    {
+        reval = I_WASERVER_GAME__RESULT_CODE__CHAR_DELETE_DB_DELETE_ERROR;
+        goto do_response_and_free;
+    }
+    
 
     reval = I_WASERVER_GAME__RESULT_CODE__SUCCESS;
     
@@ -428,11 +496,11 @@ do_response_and_free:
     /* write response packet */
     i_waserver_game__char_delete_server__init(&rsp);
     rsp.result = reval;
-    len = i_waserver_game__char_delete_server__pack(&rsp, send_packet_buf+4);
-    iWA_Net_WritePacketUint16(send_packet_buf, len);
-    iWA_Net_WritePacketUint16(send_packet_buf+2, iWAenum_GAME_CMD_CHAR_DELETE);
-    encrypt_packet_header(session, send_packet_buf);
-    write_data_bufferevent(session, send_packet_buf, len+4);
+    len = i_waserver_game__char_delete_server__pack(&rsp, pkg+4);
+    iWA_Net_WritePacketUint16(pkg, len);
+    iWA_Net_WritePacketUint16(pkg+2, iWAenum_GAME_CMD_CHAR_DELETE);
+    encrypt_packet_header(session, pkg);
+    write_data_bufferevent(session, pkg, len+4);
 
     /* do free */
     if(char_delete!= NULL)    i_waserver_game__char_delete_client__free_unpacked(char_delete, NULL);
@@ -458,6 +526,9 @@ static void handle_player_login_client_packet(iWAstruct_GameServer_Packet *pkt)
 
 static iWAbool server_init(void)
 {
+    iWAstruct_Mysql_QueryResult *result;
+
+    iWA_Std_memset((void*)&server_info_block, 0, sizeof(iWAstruct_GameServer_InfoBlock));
 
     iWA_Log_Init();
 
@@ -513,6 +584,22 @@ static iWAbool server_init(void)
         iWA_Error("open iWA_Global_DatabaseGame error");
         return 0;
     }
+
+    /* query server info */
+    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseGame, "select SID from server_info;"))
+    {
+        iWA_Error("query server info error");
+        return 0;
+    }
+
+    result = iWA_Mysql_DatabaseStoreResult(iWA_Global_DatabaseGame);
+    if(result == NULL)
+    {
+        iWA_Error("server info is NULL");
+        return 0;
+    }
+    
+    server_info_block.SID = iWA_Std_atoi(result->row[0]);
     
     return 1;
 }
@@ -562,13 +649,13 @@ static void timer_event_cb(iWAint32 fd, iWAint16 event, void *argc)
 {
     iWAstruct_GameServer_Packet *pkt;
 
-    while(packet_queue_header != NULL)
+    while(server_info_block.packet_queue_header != NULL)
     {
-        pkt = packet_queue_header;
+        pkt = server_info_block.packet_queue_header;
 
         iWA_Assert(pkt->session != NULL);
 
-        if(pkt->type == iWAenum_GAME_CMD_AUTH_SEESION || pkt->session->auth_pass)  
+        if(pkt->type == iWAenum_GAME_CMD_AUTH_SEESION || pkt->session->status == iWAenum_GAMESERVER_SESSION_STATUS_AUTHED)  
         {
             switch(pkt->type)
             {
@@ -593,12 +680,12 @@ static void timer_event_cb(iWAint32 fd, iWAint16 event, void *argc)
             }
         }
         
-        packet_queue_header = pkt->next;
+        server_info_block.packet_queue_header = pkt->next;
         iWA_Free(pkt);
-        if(packet_queue_header == NULL)     packet_queue_tail = NULL;
+        if(server_info_block.packet_queue_header == NULL)     server_info_block.packet_queue_tail = NULL;
     }
 
-    event_add(timer_event, &timer_interval);
+    event_add(server_info_block.timer_event, &server_info_block.timer_interval);
 }
 
 
@@ -654,12 +741,12 @@ static void bufevent_read_cb(struct bufferevent *bev, void *arg)
 
     iWA_Info("extract packet, type=0x%02x", packet_type);
 
-    if(packet_queue_header == NULL)
-        packet_queue_header = packet;
+    if(server_info_block.packet_queue_header == NULL)
+        server_info_block.packet_queue_header = packet;
     else
-        packet_queue_tail->next = packet;
+        server_info_block.packet_queue_tail->next = packet;
         
-    packet_queue_tail = packet;
+    server_info_block.packet_queue_tail = packet;
 }
 
 static void bufevent_write_cb(struct bufferevent *bev, void *arg)  
@@ -732,11 +819,11 @@ iWAint32 iWA_GameServer_Main(void)
     if(listen_event == NULL)    iWA_Fatal("new listen_event error");
     event_add(listen_event, NULL);
 
-    timer_interval.tv_sec=5; 
-    timer_interval.tv_usec=0;
-    timer_event = event_new(base, -1, 0, timer_event_cb, NULL);
-    if(timer_event == NULL)  iWA_Fatal("new timer_event error");
-    event_add(timer_event, &timer_interval);
+    server_info_block.timer_interval.tv_sec = 0; 
+    server_info_block.timer_interval.tv_usec = 500;
+    server_info_block.timer_event = event_new(base, -1, 0, timer_event_cb, NULL);
+    if(server_info_block.timer_event == NULL)  iWA_Fatal("new timer_event error");
+    event_add(server_info_block.timer_event, &server_info_block.timer_interval);
     
     event_base_dispatch(base);
 

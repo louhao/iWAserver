@@ -26,13 +26,19 @@ typedef struct
     iWAuint8 data[4];
 }iWAstruct_AuthServer_Packet;
 
-static struct event *timer_event;
-static struct timeval timer_interval;
 
-static iWAstruct_AuthServer_Packet *packet_queue_header = NULL;
-static iWAstruct_AuthServer_Packet *packet_queue_tail = NULL;
-static iWAuint8 send_packet_buf[1024];
-static iWAint8 bn_to_hex_buf[512];
+typedef struct
+{
+    struct event *timer_event;
+    struct timeval timer_interval;
+    iWAstruct_AuthServer_Packet *packet_queue_header;
+    iWAstruct_AuthServer_Packet *packet_queue_tail;
+    iWAuint8 send_packet_buf[1024];
+    iWAint8 bn_to_hex_buf[512];
+}iWAstruct_AuthServer_InfoBlock;
+
+static iWAstruct_AuthServer_InfoBlock server_info_block = {0};
+
 
 static iWAbool server_init(void);
 static void listen_event_cb(evutil_socket_t listener, iWAint16 event, void *arg);
@@ -44,7 +50,6 @@ static void handle_logon_client_packet(iWAstruct_AuthServer_Packet *pkt);
 static void handle_reg_client_packet(iWAstruct_AuthServer_Packet *pkt);
 static void handle_server_list_client_packet(iWAstruct_AuthServer_Packet *pkt);
 static iWAbool write_data_bufferevent(iWAstruct_AuthSession_Session * session, iWAuint8 *data, iWAuint32 len);
-static iWAuint32 write_server_list_packet(iWAuint8 *buf);
 static void handle_proof_client_packet(iWAstruct_AuthServer_Packet *pkt);
 
 
@@ -55,7 +60,7 @@ static iWAint8* bn_to_hex(BIGNUM *bn)   /* BN_bn2hex NOT release memory, using t
     static const iWAint8 hex[]="0123456789ABCDEF";
     iWAint32 len;
 
-    p = bn_to_hex_buf;
+    p = server_info_block.bn_to_hex_buf;
     
     if (bn->neg)    *(p++) = '-';
     if (BN_is_zero(bn))     *(p++) = '0';
@@ -78,7 +83,7 @@ static iWAint8* bn_to_hex(BIGNUM *bn)   /* BN_bn2hex NOT release memory, using t
 
     *p = 0x00;
 
-    return bn_to_hex_buf;
+    return server_info_block.bn_to_hex_buf;
 }
 
 
@@ -93,83 +98,24 @@ static iWAbool write_data_bufferevent(iWAstruct_AuthSession_Session * session, i
 }
 
 
-static iWAuint32 write_server_list_packet(iWAuint8 *buf)
-{
-    IWAserverAuth__ServerListServer list;
-    iWAint8 *sql = "select sid, region, status, name, hit, address, port from servers where valid = 1;";
-    iWAstruct_Mysql_QueryResult *result;
-    iWAint8 **row;
-    IWAserverAuth__ServerListServer__Server *server;
-    iWAuint32 i, len = 0;
 
-    iWA_Info("write_server_list_packet()");
-
-    if(buf == NULL)    return 0;
-
-    /* query server info */
-    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseAccount, sql))   return 0;
-
-    result = iWA_Mysql_DatabaseStoreResult(iWA_Global_DatabaseAccount);
-    if(!result)     return 0;
-
-    /* fill IWAserverAuth__ServerListServer */
-    i_waserver_auth__server_list_server__init(&list);
-    list.n_servers = 0;
-    if(result->num > 0)
-        list.servers = (IWAserverAuth__ServerListServer__Server**)iWA_Malloc(sizeof(IWAserverAuth__ServerListServer__Server*) * (result->num));
-
-    while(result->row)
-    {
-        row = result->row;
-        server = (IWAserverAuth__ServerListServer__Server*)iWA_Malloc(sizeof(IWAserverAuth__ServerListServer__Server));
-
-        i_waserver_auth__server_list_server__server__init(server);
-        server->sid = iWA_Std_atoi(row[0]);
-        server->region = iWA_Std_atoi(row[1]);
-        server->status = iWA_Std_atoi(row[2]);
-        server->name = row[3];
-        server->hit = row[4];
-        server->address = row[5];
-        server->port = iWA_Std_atoi(row[6]);
-
-        list.servers[list.n_servers++] = server;
-        iWA_Mysql_DatabaseNextRow(result);
-    }
-
-    list.num = list.n_servers;
-
-    /* encode to buf */
-    len = i_waserver_auth__server_list_server__pack(&list, buf);
-
-do_free:
-
-    /* free IWAserverAuth__ServerListServer */
-    if(list.servers != NULL)
-    {
-        for(i = 0; i < list.n_servers; i++)
-        {
-            if(list.servers[i] != NULL)    iWA_Free((void*)list.servers[i]);
-        }
-
-        iWA_Free((void*)list.servers);
-    }
-
-    /* free sql result */
-    if(result != NULL)  iWA_Mysql_DatabaseFreeResult(result);
-
-    return len;
-}
 
 static void handle_reg_client_packet(iWAstruct_AuthServer_Packet *pkt)
 {
     IWAserverAuth__LogRegClient *reg;
     IWAserverAuth__LogRegServer rsp;
     iWAint32 len;
-    iWAint8 sql[250];
     iWAint32 reval = I_WASERVER_AUTH__RESULT_CODE__UNKNOWN_ERROR;
+    iWAuint8 *pkg = server_info_block.send_packet_buf;
+    iWAstruct_AuthSession_Session* session;
+    iWAstruct_Mysql_QueryResult *result = NULL;
 
     iWA_Info("handle_reg_client_packet()");
 
+    session = pkt->session;
+    session->status = iWAenum_AUTHSERVER_SESSION_STATUS_UNLOGON;
+
+    /* unpack message */
     reg = i_waserver_auth__log_reg_client__unpack(NULL, pkt->len, pkt->data);
     if(reg == NULL)
     {
@@ -177,21 +123,45 @@ static void handle_reg_client_packet(iWAstruct_AuthServer_Packet *pkt)
         goto do_response_and_free;
     }
 
+    /* check username */
     if(reg->username == NULL || reg->username[0] == 0x00)
     {
         reval = I_WASERVER_AUTH__RESULT_CODE__REG_USERNAME_EMPTY;
         goto do_response_and_free;        
     }
 
+    /* check password_hash */
     if(reg->password_hash == NULL || reg->password_hash[0] == 0x00)
     {
         reval = I_WASERVER_AUTH__RESULT_CODE__REG_PASSWORD_EMPTY;
         goto do_response_and_free;        
     }
+
+    /* check if username already exists */
+    iWA_Std_sprintf(session->sql, "select username from users where username = '%s';", reg->username);
+
+    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseAccount, session->sql))
+    {
+        reval = I_WASERVER_AUTH__RESULT_CODE__REG_DB_QUERY_ERROR;
+        goto do_response_and_free;
+    }
     
-    iWA_Std_sprintf(sql, "insert into users (username, password, sessionkey) values ('%s', '%s', '00000000000000000000000000000000000000000000000000000000000000000000000000000000');", reg->username, reg->password_hash);
+    result = iWA_Mysql_DatabaseStoreResult(iWA_Global_DatabaseAccount);
+    if(result == NULL)
+    {
+        reval = I_WASERVER_AUTH__RESULT_CODE__REG_DB_QUERY_ERROR;
+        goto do_response_and_free;
+    }
+    if(result->num > 0)
+    {
+        reval = I_WASERVER_AUTH__RESULT_CODE__REG_USERNAME_ALREADY_EXISTS;
+        goto do_response_and_free;
+    }    
+
+    /* insert into account-db */    
+    iWA_Std_sprintf(session->sql, "insert into users (username, password, sessionkey) values ('%s', '%s', '00000000000000000000000000000000000000000000000000000000000000000000000000000000');", reg->username, reg->password_hash);
     
-    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseAccount, sql))
+    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseAccount, session->sql))
     {
         reval = I_WASERVER_AUTH__RESULT_CODE__REG_DB_INSERT_ERROR;
         goto do_response_and_free;
@@ -204,13 +174,14 @@ do_response_and_free:
     /* write response packet */
     i_waserver_auth__log_reg_server__init(&rsp);
     rsp.result = reval;
-    len = i_waserver_auth__log_reg_server__pack(&rsp, send_packet_buf+4);
-    iWA_Net_WritePacketUint16(send_packet_buf, len);
-    iWA_Net_WritePacketUint16(send_packet_buf+2, iWAenum_AUTH_CMD_REG);
-    write_data_bufferevent(pkt->session, send_packet_buf, len+4);
+    len = i_waserver_auth__log_reg_server__pack(&rsp, pkg+4);
+    iWA_Net_WritePacketUint16(pkg, len);
+    iWA_Net_WritePacketUint16(pkg+2, iWAenum_AUTH_CMD_REG);
+    write_data_bufferevent(pkt->session, pkg, len+4);
 
     /* do free */
     if(reg != NULL)  i_waserver_auth__log_reg_client__free_unpacked(reg, NULL);
+    if(result != NULL)  iWA_Mysql_DatabaseFreeResult(result);
 }
 
 
@@ -221,7 +192,6 @@ static void handle_logon_client_packet(iWAstruct_AuthServer_Packet *pkt)
     iWAstruct_AuthSession_Session* session;
     iWAstruct_Mysql_QueryResult *result = NULL;
     iWAint32 len;
-    iWAint8 sql[100];
     iWAint32 reval = I_WASERVER_AUTH__RESULT_CODE__UNKNOWN_ERROR;
     iWAint8 *password_hash;
     BIGNUM p, x, g_mod;
@@ -229,10 +199,12 @@ static void handle_logon_client_packet(iWAstruct_AuthServer_Packet *pkt)
     SHA1Context sha_ctx;
     BN_CTX *bn_ctx;
     iWAuint8  B_bin[80], g_bin[5], N_bin[80], s_bin[40];
+    iWAuint8 *pkg = server_info_block.send_packet_buf;
     
     iWA_Info("handle_logon_client_packet()");
 
     session = pkt->session;
+    session->status = iWAenum_AUTHSERVER_SESSION_STATUS_UNLOGON;
 
     logon = i_waserver_auth__log_reg_client__unpack(NULL, pkt->len, pkt->data);
     if(logon == NULL)
@@ -247,9 +219,9 @@ static void handle_logon_client_packet(iWAstruct_AuthServer_Packet *pkt)
         goto do_response_and_free;        
     }
     
-    iWA_Std_sprintf(sql, "select UID, password from users where username = '%s';", logon->username);
+    iWA_Std_sprintf(session->sql, "select UID, password from users where username = '%s';", logon->username);
     
-    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseAccount, sql))
+    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseAccount, session->sql))
     {
         reval = I_WASERVER_AUTH__RESULT_CODE__LOGON_DB_QUERY_ERROR;    
         goto do_response_and_free;
@@ -326,6 +298,7 @@ static void handle_logon_client_packet(iWAstruct_AuthServer_Packet *pkt)
     BN_CTX_free(bn_ctx);  
 
     reval = I_WASERVER_AUTH__RESULT_CODE__SUCCESS;
+    session->status = iWAenum_AUTHSERVER_SESSION_STATUS_LOGONING;
 
     iWA_Debug("password_hash : %s", password_hash);
     iWA_Debug("p : %s", bn_to_hex(&p));
@@ -359,10 +332,10 @@ do_response_and_free:
     rsp.s.len = iWA_Net_WritePacketBigNumber(s_bin, &session->s); 
     rsp.s.data = s_bin;
     
-    len = i_waserver_auth__log_reg_server__pack(&rsp, send_packet_buf+4);
-    iWA_Net_WritePacketUint16(send_packet_buf, len);
-    iWA_Net_WritePacketUint16(send_packet_buf+2, iWAenum_AUTH_CMD_LOGON);
-    write_data_bufferevent(pkt->session, send_packet_buf, len+4);
+    len = i_waserver_auth__log_reg_server__pack(&rsp, pkg+4);
+    iWA_Net_WritePacketUint16(pkg, len);
+    iWA_Net_WritePacketUint16(pkg+2, iWAenum_AUTH_CMD_LOGON);
+    write_data_bufferevent(pkt->session, pkg, len+4);
 
     /* do free */
     if(logon != NULL)    i_waserver_auth__log_reg_client__free_unpacked(logon, NULL);
@@ -380,11 +353,12 @@ static void handle_proof_client_packet(iWAstruct_AuthServer_Packet *pkt)
     BIGNUM bn1, bn2, *p_bn;
     SHA1Context sha_ctx;
     BN_CTX *bn_ctx;
-    iWAint8 sql[150];
-    
+    iWAuint8 *pkg = server_info_block.send_packet_buf;
+
     iWA_Info("handle_proof_client_packet()");
 
     session = pkt->session;
+    session->status = iWAenum_AUTHSERVER_SESSION_STATUS_UNLOGON;
 
     proof = i_waserver_auth__proof_client__unpack(NULL, pkt->len, pkt->data);
     if(proof == NULL)
@@ -457,12 +431,18 @@ static void handle_proof_client_packet(iWAstruct_AuthServer_Packet *pkt)
         }  
     
         /* M == M1, store K value to DB */
-        iWA_Std_sprintf(sql, "update users set sessionkey = '%s' where username = '%s';", bn_to_hex(&K), session->account);
+        iWA_Std_sprintf(session->sql, "update users set sessionkey = '%s' where username = '%s';", bn_to_hex(&K), session->account);
         
-        if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseAccount, sql))
+        if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseAccount, session->sql))
+        {
             reval = I_WASERVER_AUTH__RESULT_CODE__LOGON_DB_QUERY_ERROR;    
+        }
         else
+        {
             reval = I_WASERVER_AUTH__RESULT_CODE__SUCCESS;
+            session->status = iWAenum_AUTHSERVER_SESSION_STATUS_LOGONED;
+
+        }
     }
     else    /* M != M1 */
     {
@@ -484,58 +464,162 @@ static void handle_proof_client_packet(iWAstruct_AuthServer_Packet *pkt)
 
 do_response_and_free:
 
+    /* write response packet */
     i_waserver_auth__proof_server__init(&rsp);
     rsp.result = reval;
-    len = i_waserver_auth__proof_server__pack(&rsp, send_packet_buf+4);
-    iWA_Net_WritePacketUint16(send_packet_buf, len);
-    iWA_Net_WritePacketUint16(send_packet_buf+2, iWAenum_AUTH_CMD_PROOF);
-    write_data_bufferevent(pkt->session, send_packet_buf, len+4);
+    len = i_waserver_auth__proof_server__pack(&rsp, pkg+4);
+    iWA_Net_WritePacketUint16(pkg, len);
+    iWA_Net_WritePacketUint16(pkg+2, iWAenum_AUTH_CMD_PROOF);
+    write_data_bufferevent(pkt->session, pkg, len+4);
 
+    /* do free */
     i_waserver_auth__proof_client__free_unpacked(proof, NULL);
 }
 
 
 static void handle_server_list_client_packet(iWAstruct_AuthServer_Packet *pkt)
 {
-    iWAuint32 len;
+    iWAstruct_AuthSession_Session* session;
+    IWAserverAuth__ServerListServer list;
+    iWAstruct_Mysql_QueryResult *result, *result_chr;
+    iWAint8 **row;
+    IWAserverAuth__ServerListServer__Server *server;
+    IWAserverAuth__ServerListServer__Server__Character *chr;
+    iWAuint32 i, j, len = 0;
+    iWAuint8 *pkg = server_info_block.send_packet_buf;
+    iWAint32 reval = I_WASERVER_AUTH__RESULT_CODE__UNKNOWN_ERROR;
 
     iWA_Info("handle_server_list_client_packet()");
 
-    len = write_server_list_packet(send_packet_buf+4);
-    if(len == 0)    
+    session = pkt->session;
+
+    /* query server info */
+    if(!iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseAccount, "select sid, region, status, name, hit, address, port from servers where valid = 1;"))   
     {
-        iWA_Info("write_server_list_packet fail");
-        return;
+        reval = I_WASERVER_AUTH__RESULT_CODE__SERVER_LIST_DB_QUERY_ERROR;    
+        goto do_response_and_free;
     }
-    
-    iWA_Net_WritePacketUint16(send_packet_buf, len);
-    iWA_Net_WritePacketUint16(send_packet_buf+2, iWAenum_AUTH_CMD_SERVER_LIST);
 
-    write_data_bufferevent(pkt->session, send_packet_buf, len+4);
+    /* init IWAserverAuth__ServerListServer */
+    i_waserver_auth__server_list_server__init(&list);
+
+    /* get server list result */
+    result = iWA_Mysql_DatabaseStoreResult(iWA_Global_DatabaseAccount);
+    if(result == NULL) 
+    {
+        reval = I_WASERVER_AUTH__RESULT_CODE__SERVER_LIST_DB_QUERY_ERROR;
+        goto do_response_and_free;
+    }
+
+    /* alloc server list */
+    if(result->num > 0)
+        list.servers = (IWAserverAuth__ServerListServer__Server**)iWA_Malloc(sizeof(IWAserverAuth__ServerListServer__Server*) * (result->num));
+
+    /* fill server list */
+    while(result->row != NULL)
+    {
+        /* alloc server */
+        server = (IWAserverAuth__ServerListServer__Server*)iWA_Malloc(sizeof(IWAserverAuth__ServerListServer__Server));
+
+        /* fill server info */
+        i_waserver_auth__server_list_server__server__init(server);
+        row = result->row;
+        server->sid = iWA_Std_atoi(row[0]);
+        server->region = iWA_Std_atoi(row[1]);
+        server->status = iWA_Std_atoi(row[2]);
+        server->name = row[3];
+        server->hit = row[4];
+        server->address = row[5];
+        server->port = iWA_Std_atoi(row[6]);
+
+        /* query character info */
+        iWA_Std_sprintf(session->sql, "select CID, name, grade, race, nation from characters where SID = %d and UID = %d;", server->sid, session->UID);
+        if(iWA_Mysql_DatabaseQuery(iWA_Global_DatabaseAccount, session->sql))   
+        {
+            result_chr = iWA_Mysql_DatabaseStoreResult(iWA_Global_DatabaseAccount);
+            if(result_chr != NULL)
+            {
+                /* alloc character list */
+                if(result_chr->num > 0)
+                    server->characters = (IWAserverAuth__ServerListServer__Server__Character**)
+                                                    iWA_Malloc(sizeof(IWAserverAuth__ServerListServer__Server__Character*)*(result_chr->num));
+
+                /* fill character list */
+                while(result_chr->row != NULL)
+                {
+                    /* alloc character */
+                    chr = (IWAserverAuth__ServerListServer__Server__Character*)iWA_Malloc(sizeof(IWAserverAuth__ServerListServer__Server__Character));
+
+                    /* fill character */
+                    i_waserver_auth__server_list_server__server__character__init(chr);
+                    row = result_chr->row;
+                    chr->cid = iWA_Std_atoi(row[0]);
+                    chr->name = (iWAint8*)iWA_Malloc(iWA_Std_strlen(row[1]) + 1);
+                    iWA_Std_strcpy(chr->name, row[1]);
+                    chr->grade = iWA_Std_atoi(row[2]);
+                    chr->race = iWA_Std_atoi(row[3]);
+                    chr->nation = iWA_Std_atoi(row[4]);
+                    
+                    /* add character to list */
+                    server->characters[server->n_characters++] = chr;
+
+                    /* next character row */
+                    iWA_Mysql_DatabaseNextRow(result_chr);
+                }
+
+                /* free result_chr*/
+                iWA_Mysql_DatabaseFreeResult(result_chr);
+            }
+        }
+
+        /* add server to list */
+        list.servers[list.n_servers++] = server;
+
+        /* next server row */
+        iWA_Mysql_DatabaseNextRow(result);
+    }
+
+    reval = I_WASERVER_AUTH__RESULT_CODE__SUCCESS;
+
+do_response_and_free:
+
+    /* write response packet */
+    list.result =reval;
+    len = i_waserver_auth__server_list_server__pack(&list, pkg+4);
+    iWA_Net_WritePacketUint16(pkg, len);
+    iWA_Net_WritePacketUint16(pkg+2, iWAenum_AUTH_CMD_SERVER_LIST);
+    write_data_bufferevent(pkt->session, pkg, len+4);
+
+    /* do free */
+    if(list.servers != NULL)
+    {
+        for(i = 0; i < list.n_servers; i++)
+        {
+            if(list.servers[i] == NULL)     continue;
+    
+            for(j = 0; j < list.servers[i]->n_characters; j++)
+            {
+                if(list.servers[i]->characters[j] != NULL)   
+                {
+                    iWA_Free((void*)list.servers[i]->characters[j]->name);
+                    iWA_Free((void*)list.servers[i]->characters[j]);
+                }
+            }
+            
+            iWA_Free((void*)list.servers[i]);
+        }
+
+        iWA_Free((void*)list.servers);
+    }
+
+    if(result != NULL)  iWA_Mysql_DatabaseFreeResult(result);
 }
 
-#if 0
-static iWAbool server_init(void)
-{
-    iWA_Info("server_init()");
-
-    iWA_Global_DatabaseAccount = iWA_Mysql_DatabaseNew();
-    if(iWA_Global_DatabaseAccount == NULL)  return 0;
-
-    iWA_Std_strcpy(iWA_Global_DatabaseAccount->host, "localhost");
-    iWA_Global_DatabaseAccount->port = 3306;
-    iWA_Std_strcpy(iWA_Global_DatabaseAccount->user, "root");
-    iWA_Std_strcpy(iWA_Global_DatabaseAccount->pwd, "");
-    iWA_Std_strcpy(iWA_Global_DatabaseAccount->name, "iWAaccount");
-    
-    if(!iWA_Mysql_DatabaseOpen(iWA_Global_DatabaseAccount)) return 0;
-
-    return 1;
-}
-#endif
 
 static iWAbool server_init(void)
 {
+    iWA_Std_memset((void*)&server_info_block, 0, sizeof(iWAstruct_AuthServer_InfoBlock));
+
     iWA_Log_Init();
 
     iWA_Info("server_init()");
@@ -605,13 +689,11 @@ static void timer_event_cb(iWAint32 fd, iWAint16 event, void *argc)
 {
     iWAstruct_AuthServer_Packet *pkt;
 
-    while(packet_queue_header != NULL)
+    while(server_info_block.packet_queue_header != NULL)
     {
-        pkt = packet_queue_header;
+        pkt = server_info_block.packet_queue_header;
 
         iWA_Assert(pkt->session != NULL);
-
-        /* !!!!!!!!!  should check seesion status */
 
         switch(pkt->type)
         {
@@ -622,22 +704,22 @@ static void timer_event_cb(iWAint32 fd, iWAint16 event, void *argc)
                 handle_logon_client_packet(pkt);
                 break;
             case iWAenum_AUTH_CMD_PROOF:
-                handle_proof_client_packet(pkt);
+                if(pkt->session->status == iWAenum_AUTHSERVER_SESSION_STATUS_LOGONING)     handle_proof_client_packet(pkt);
                 break;           
             case iWAenum_AUTH_CMD_SERVER_LIST:
-                handle_server_list_client_packet(pkt);
+                if(pkt->session->status == iWAenum_AUTHSERVER_SESSION_STATUS_LOGONED)     handle_server_list_client_packet(pkt);
                 break;                  
             default:
                 iWA_Info("unkonwn type packet");
                 break;
         }
 
-        packet_queue_header = pkt->next;
+        server_info_block.packet_queue_header = pkt->next;
         iWA_Free(pkt);
-        if(packet_queue_header == NULL)     packet_queue_tail = NULL;
+        if(server_info_block.packet_queue_header == NULL)     server_info_block.packet_queue_tail = NULL;
     }
 
-    event_add(timer_event, &timer_interval);
+    event_add(server_info_block.timer_event, &server_info_block.timer_interval);
 }
 
 
@@ -678,12 +760,12 @@ static void bufevent_read_cb(struct bufferevent *bev, void *arg)
 
     iWA_Info("extract packet, type=0x%02x", packet_type);
 
-    if(packet_queue_header == NULL)
-        packet_queue_header = packet;
+    if(server_info_block.packet_queue_header == NULL)
+        server_info_block.packet_queue_header = packet;
     else
-        packet_queue_tail->next = packet;
+        server_info_block.packet_queue_tail->next = packet;
         
-    packet_queue_tail = packet;
+    server_info_block.packet_queue_tail = packet;
 }
 
 static void bufevent_write_cb(struct bufferevent *bev, void *arg)  
@@ -775,12 +857,12 @@ iWAint32 iWA_AuthServer_Main(void)
         return -5;
     }
 
-    timer_interval.tv_sec=5; 
-    timer_interval.tv_usec=0;
-    timer_event = event_new(base, -1, 0, timer_event_cb, NULL);
-    if(timer_event != NULL)
+    server_info_block.timer_interval.tv_sec = 0; 
+    server_info_block.timer_interval.tv_usec = 500;
+    server_info_block.timer_event = event_new(base, -1, 0, timer_event_cb, NULL);
+    if(server_info_block.timer_event != NULL)
     {
-        event_add(timer_event, &timer_interval);
+        event_add(server_info_block.timer_event, &server_info_block.timer_interval);
     }
     else
     {

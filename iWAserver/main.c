@@ -28,8 +28,8 @@
 int main(int argc, char *argv[])
 {
 
-    return iWA_AuthServer_Main();
-
+    //return iWA_AuthServer_Main();
+    return iWA_GameServer_Main();
 }
 
 
