@@ -29,6 +29,7 @@ typedef struct
 
 typedef struct
 {
+    pthread_t  thread;
     struct event *timer_event;
     struct timeval timer_interval;
     iWAstruct_AuthServer_Packet *packet_queue_header;
@@ -618,35 +619,7 @@ do_response_and_free:
 
 static iWAbool server_init(void)
 {
-    iWA_Std_memset((void*)&server_info_block, 0, sizeof(iWAstruct_AuthServer_InfoBlock));
-
-    iWA_Log_Init();
-
-    iWA_Info("server_init()");
-
-    /* set gameserver.ini filename */
-    iWA_Config_Init(iWAmacro_CONFIG_AUTHSERVER_INI_FILENAME);
-
-    /* init AccountDB connect */
-    iWA_Global_DatabaseAccount = iWA_Mysql_DatabaseNew();
-    iWA_Assert(iWA_Global_DatabaseAccount != NULL);
-
-    if(!iWA_Config_GetString("AccountDB", "AccountDBServerHost", iWA_Global_DatabaseAccount->host, iWAmacro_MYSQL_HOST_LENGTH_MAX))
-        iWA_Std_strcpy(iWA_Global_DatabaseAccount->host, iWAmacro_CONFIG_ACCOUNT_DB_SERVER_HOST_DEFAULT);
-
-    if(!iWA_Config_GetInteger("AccountDB", "AccountDBServerPort", &iWA_Global_DatabaseAccount->port))
-        iWA_Global_DatabaseAccount->port = iWAmacro_CONFIG_ACCOUNT_DB_SERVER_PORT_DEFAULT;
-
-    if(!iWA_Config_GetString("AccountDB", "AccountDBServerUsername", iWA_Global_DatabaseAccount->user, iWAmacro_MYSQL_USER_LENGTH_MAX))
-        iWA_Std_strcpy(iWA_Global_DatabaseAccount->user, iWAmacro_CONFIG_ACCOUNT_DB_SERVER_USERNAME_DEFAULT);
-
-    if(!iWA_Config_GetString("AccountDB", "AccountDBServerPassword", iWA_Global_DatabaseAccount->pwd, iWAmacro_MYSQL_PWD_LENGTH_MAX))
-        iWA_Std_strcpy(iWA_Global_DatabaseAccount->pwd, iWAmacro_CONFIG_ACCOUNT_DB_SERVER_PASSWORD_DEFAULT);    
-
-    if(!iWA_Config_GetString("AccountDB", "AccountDBName", iWA_Global_DatabaseAccount->name, iWAmacro_MYSQL_DBNAME_LENGTH_MAX))
-        iWA_Std_strcpy(iWA_Global_DatabaseAccount->name, iWAmacro_CONFIG_ACCOUNT_DB_NAME_DEFAULT);
-
-    iWA_Assert(iWA_Mysql_DatabaseOpen(iWA_Global_DatabaseAccount));
+    iWA_Info("auth server init");
 
     return 1;
 }
@@ -798,7 +771,7 @@ static void bufevent_error_cb(struct bufferevent *bev, iWAint16 event, void *arg
 }
 
 
-iWAint32 iWA_AuthServer_Main(void)
+static void* authserver_thread(void *data)
 {
     evutil_socket_t listener;
     struct sockaddr_in sin;
@@ -810,14 +783,13 @@ iWAint32 iWA_AuthServer_Main(void)
     WSAStartup(0x0201, &wsa_data);
 #endif
 
-    if(!server_init())  iWA_Fatal("server_init error");
+    iWA_Info("authserver_thread()");
 
-    iWA_Info("iWA_AuthServer_Main()");
+    if(!server_init())  iWA_Fatal("auth server init error");
 
     listener = socket(AF_INET, SOCK_STREAM, 0);
     assert(listener > 0);
     evutil_make_listen_socket_reuseable(listener);
-
 
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = 0;
@@ -835,7 +807,7 @@ iWAint32 iWA_AuthServer_Main(void)
         return -3;
     }
 
-    iWA_Info ("AuthServer Listening...");
+    iWA_Info("AuthServer Listening...");
 
     evutil_make_socket_nonblocking(listener);
 
@@ -877,4 +849,12 @@ iWAint32 iWA_AuthServer_Main(void)
     return 0;
 }
 
+void iWA_AuthServer_Main(void)
+{
+    iWA_Info("iWA_AuthServer_Main()");
+
+    iWA_Std_memset((void*)&server_info_block, 0, sizeof(iWAstruct_AuthServer_InfoBlock));
+
+    pthread_create(&server_info_block.thread, NULL, authserver_thread, NULL);
+}
 

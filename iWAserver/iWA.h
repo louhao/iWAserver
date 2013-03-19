@@ -287,8 +287,8 @@ extern iWAbool iWA_AuthServer_Init(void);
 extern void iWA_AuthServer_BuffereventReadCb(struct bufferevent *bev);
 extern void iWA_AuthServer_HandlePacketQueue(void);
 #endif
-extern iWAint32 iWA_AuthServer_Main(void);
-
+extern void iWA_AuthServer_Main(void);
+extern void iWA_GameServer_Main(void);
 
 extern iWAstruct_Mysql_Database* iWA_Mysql_DatabaseNew(void);
 extern iWAbool iWA_Mysql_DatabaseOpen(iWAstruct_Mysql_Database* db);
